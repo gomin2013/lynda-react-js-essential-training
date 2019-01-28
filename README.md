@@ -62,3 +62,59 @@ const Title = createElement(
 
 render(Title, document.getElementById('react-container'));
 ```
+
+### Refactoring elements using JSX
+
+**Style Element**
+
+index.js (ES6)
+```javascript
+const { createElement } = React;
+const { render } = ReactDOM;
+
+const style = {
+  backgroundColor: 'orange',
+  color: 'white',
+  fontFamily: 'verdana'
+};
+
+const Title = createElement(
+  'h1',
+  {id: 'title', className: 'header', style: style},
+  'Hello World'
+);
+
+render(Title, document.getElementById('react-container'));
+```
+
+**JSX Style**
+
+React can either render HTML tags (strings) or React components (classes). To render an HTML tag, just use lower-case tag names in JSX.
+
+index.js (JSX)
+```javascript
+const {render} = ReactDOM;
+
+render(
+  <h1 id='title'
+      className='header'
+      style={{backgroundColor: 'orange', color: 'white', fontFamily: 'verdana'}}>
+    Hello World
+  </h1>,
+  document.getElementById('react-container')
+);
+```
+
+![ES6 and JSX](/images/02-02-es6-and-jsx.png)
+
+We will get an error message below on browser's console. Because our browser can't read the HTML tags in javascript.
+
+```
+SyntaxError: expected expression, got '<'
+```
+
+![JSX Error Message](/images/02-02-jsx-error-message.png)
+
+So we need to **Transform JSX to JS** using **Babel**.
+
+![Transform JSX to JS using Babel](/images/02-02-transform-jsx-to-js-using-babel.png)
