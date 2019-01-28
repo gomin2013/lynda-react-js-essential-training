@@ -147,3 +147,106 @@ index.html
 ```
 
 ![Babel inline transpiling](/images/02-03-babel-inline-transpiling.png)
+
+### Babel static transpiling with babel-cli
+
+**Setting up NodeJS**
+
+![Setting up NodeJS](/images/02-04-setting-up-node-js.png)
+
+install NodeJS
+```
+brew install node
+```
+
+Node JS Version
+```
+node -v
+▶ v11.7.0
+```
+
+NPM Version
+```
+npm -v
+▶ 6.7.0
+```
+
+**Setting up Babel**
+
+![Setting up Babel](/images/02-04-setting-up-babel.png)
+
+Install Babel CLI
+```
+sudo npm install babel-cli -g
+npm list -g --depth=0
+```
+
+.babelrc
+```json
+{
+  "presets": ["latest", "react", "stage-0"]
+}
+```
+
+Install Babel preset
+```
+npm install babel-preset-latest babel-preset-react babel-preset-stage-0 --save-dev
+npm list --depth=0
+```
+
+**Using Babel to compile JSX**
+
+![Using Babel to compile JSX](/images/02-04-using-babel-to-compile-jsx.png)
+
+index.js (JSX)
+```javascript
+const {render} = ReactDOM;
+
+render(
+  <h1 id='title'
+      className='header'
+      style={{backgroundColor: 'orange', color: 'white', fontFamily: 'verdana'}}>
+    Hello World
+  </h1>,
+  document.getElementById('react-container')
+);
+```
+
+Compile Directories
+```
+babel index.js --out-file bundle.js
+▶ index.js -> bundle.js
+```
+
+bundle.js (ES6)
+```javascript
+'use strict';
+
+var _ReactDOM = ReactDOM,
+    render = _ReactDOM.render;
+
+render(React.createElement(
+  'h1',
+  { id: 'title',
+    className: 'header',
+    style: { backgroundColor: 'orange', color: 'white', fontFamily: 'verdana' } },
+  'Hello World'
+), document.getElementById('react-container'));
+```
+
+index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+  <div id="react-container"></div>
+  <script type="text/javascript" src="bundle.js"></script>
+</body>
+</html>
+```
