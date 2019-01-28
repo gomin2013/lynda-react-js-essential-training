@@ -118,3 +118,32 @@ SyntaxError: expected expression, got '<'
 So we need to **Transform JSX to JS** using **Babel**.
 
 ![Transform JSX to JS using Babel](/images/02-02-transform-jsx-to-js-using-babel.png)
+
+### Babel inline transpiling
+
+**babel-core**
+
+A compiler for writing next generation JavaScript
+```
+https://unpkg.com/@babel/standalone/babel.min.js
+```
+
+index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World with React</title>
+  <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="react-container"></div>
+  <script type="text/babel" src="index.js"></script>
+</body>
+</html>
+```
+
+![Babel inline transpiling](/images/02-03-babel-inline-transpiling.png)
