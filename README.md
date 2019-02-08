@@ -608,3 +608,160 @@ Module parse failed: Unexpected token m in JSON at position 0 while parsing near
 `Optional` Because webpack will automatically load JSON files with the built-in `json-loader`
 
 [![json-loader is not required anymore](/images/02-06-json-loader-is-not-required-anymore.png)](https://webpack.js.org/migrate/3/#json-loader-is-not-required-anymore)
+
+### Adding CSS to webpack build
+
+Install CSS & SCSS Loaders.
+```
+npm install --save-dev style-loader css-loader postcss-loader autoprefixer cssnano node-sass sass-loader
+npm list --depth=0
+```
+
+Add CSS & SCSS rules to `webpack.config.js`
+```
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    },{
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+    }
+```
+
+webpack.config.js
+```javascript
+var path = require("path");
+
+module.exports = {
+  mode: "development",
+  entry: "./src/index.js",
+  output: {
+    path: path.resolve(__dirname, "dist/assets"),
+    publicPath: "/assets/",
+    filename: "bundle.js"
+  },
+  devServer: {
+    inline: true,
+    contentBase: "./dist",
+    port: 3000
+  },
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      loader: "babel-loader",
+      options: {
+        presets: ["latest", "react", "stage-0"]
+      }
+    },{
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    },{
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+    }]
+  }
+};
+```
+
+`cssnano` and `autoprefixer` become part of `postcss`.
+
+|     Name     |   Type   |                 Property                |
+|:------------:|:--------:|:---------------------------------------:|
+| [autoprefixer](https://github.com/postcss/autoprefixer#autoprefixer-) | [Fallback](https://www.postcss.parts/tag/fallbacks) | CSS Autoprefixer - To add CSS prefixes. |
+| [cssnano](http://cssnano.co) | [Pack](https://www.postcss.parts/tag/pack) | CSS Minify - To compress CSS. |
+
+Create new directories and new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── webpack.config.js
+  ├── postcss.config.js     (Create new file)
+  └── src
+      ├── titles.json       (Create new file)
+      ├── lib.js            (Create new file)
+      ├── index.js
+      └── stylesheets       (Create new directory)
+          ├── goodbye.scss    (Create new file)
+          └── hello.css       (Create new file)
+```
+
+postcss.config.js
+```javascript
+module.exports = {
+  plugins: {
+    'autoprefixer': {},
+    'cssnano': {}
+  }
+};
+```
+
+src/titles.json
+```json
+{
+  "hello": "Bonjour!",
+  "goodbye": "Au Revoir"
+}
+```
+
+src/lib.js
+```javascript
+import React from 'react';
+import text from './titles.json';
+import './stylesheets/goodbye.scss'
+import './stylesheets/hello.css'
+
+export const hello = (
+  <h1 id='title'
+      className='hello'>
+    {text.hello}
+  </h1>
+);
+
+export const goodbye = (
+  <h1 id='title'
+      className='goodbye'>
+    {text.goodbye}
+  </h1>
+);
+```
+
+src/index.js
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import { hello, goodbye } from './lib';
+
+render(
+  <div>
+    {hello}
+    {goodbye}
+  </div>,
+  document.getElementById('react-container')
+);
+```
+
+stylesheets/goodbye.scss
+```scss
+$bg-color: turquoise;
+$text-color: indigo;
+
+.goodbye {
+  background-color: $bg-color;
+  color: $text-color;
+}
+```
+
+stylesheets/hello.css
+```css
+.hello {
+  background-color: indigo;
+  color: turquoise;
+}
+```
+
+![Adding CSS to webpack build](/images/02-07-adding-css-to-webpack-build.png)

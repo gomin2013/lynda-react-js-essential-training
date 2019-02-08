@@ -21,6 +21,12 @@ module.exports = {
       options: {
         presets: ["latest", "react", "stage-0"]
       }
+    },{
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    },{
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
     }]
   }
 };
