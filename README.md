@@ -514,3 +514,97 @@ Ctrl + C
 ```
 killall -9 node
 ```
+
+### Loading JSON with webpack
+
+Install React.
+```
+npm install --save react react-dom
+npm list --depth=0
+```
+
+Remove React script tags from `dist/index.html`
+```html
+  <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+```
+
+and add React to `src/index.js` as import instead.
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+```
+
+dist/index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World with React</title>
+</head>
+<body>
+  <div id="react-container"></div>
+  <script type="text/javascript" src="assets/bundle.js"></script>
+</body>
+</html>
+```
+
+src/index.js
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import { hello, goodbye } from './lib';
+
+render(
+  <div>
+    {hello}
+    {goodbye}
+  </div>,
+  document.getElementById('react-container')
+);
+```
+
+src/lib.js
+```javascript
+import React from 'react';
+import text from './titles.json';
+
+export const hello = (
+  <h1 id='title'
+      className='header'
+      style={{backgroundColor: 'purple', color: 'yellow'}}>
+    {text.hello}
+  </h1>
+);
+
+export const goodbye = (
+  <h1 id='title'
+      className='header'
+      style={{backgroundColor: 'yellow', color: 'purple'}}>
+    {text.goodbye}
+  </h1>
+);
+```
+
+src/title.json
+```json
+{
+  "hello": "Bonjour!",
+  "goodbye": "Au Revoir"
+}
+```
+
+![Loading JSON with webpack](/images/02-06-loading-json-with-webpack.png)
+
+`Optional` If you get an error message like below.
+```
+ERROR in ./src/titles.json
+Module parse failed: Unexpected token m in JSON at position 0 while parsing near ...
+```
+
+![json-loader error message](/images/02-06-json-loader-error-message.png)
+
+`Optional` Because webpack will automatically load JSON files with the built-in `json-loader`
+
+[![json-loader is not required anymore](/images/02-06-json-loader-is-not-required-anymore.png)](https://webpack.js.org/migrate/3/#json-loader-is-not-required-anymore)
