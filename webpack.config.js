@@ -2,7 +2,7 @@ var path = require("path");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.js",
+  entry: "./src/index.coffee",
   output: {
     path: path.resolve(__dirname, "dist/assets"),
     publicPath: "/assets/",
@@ -11,16 +11,25 @@ module.exports = {
   devServer: {
     inline: true,
     contentBase: "./dist",
-    port: 3000
+    port: 3000,
+    https: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
   },
   module: {
     rules: [{
-      test: /\.js$/,
-      exclude: /(node_modules)/,
-      loader: "babel-loader",
-      options: {
-        presets: ["latest", "react", "stage-0"]
-      }
+      test: /\.coffee$/,
+      use: [
+        {
+          loader: 'coffee-loader',
+          options: {
+            transpile: {
+              presets: ["latest", "react", "stage-0"]
+            }
+          }
+        }
+      ]
     },{
       test: /\.css$/,
       use: ['style-loader', 'css-loader', 'postcss-loader']

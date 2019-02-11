@@ -765,3 +765,285 @@ stylesheets/hello.css
 ```
 
 ![Adding CSS to webpack build](/images/02-07-adding-css-to-webpack-build.png)
+
+## 03 React Components
+### Creating components with createClass()
+
+Create a new directory and new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.js
+  │   ├── stylesheets
+  │   │   ├── globals.scss      (Create new file)
+  │   │   ├── index.scss        (Create new file)
+  │   │   └── ui.scss           (Create new file)
+  │   └── components          (Create new directory)
+  │       └── SkiDayCount.js    (Create new file)
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+Please find [`globals.scss`](../a0d8314c6b005c82e59882a13af513515b21e7c4/src/stylesheets/globals.scss), [`index.scss`](../a0d8314c6b005c82e59882a13af513515b21e7c4/src/stylesheets/index.scss) and [`ui.scss`](../a0d8314c6b005c82e59882a13af513515b21e7c4/src/stylesheets/ui.scss)
+
+src/components/SkiDayCount.js
+```javascript
+import React from 'react'
+import '../stylesheets/ui.scss'
+
+export const SkiDayCount = React.createClass({
+  render() {
+    return (
+      <div className="ski-day-count">
+        <div className="total-days">
+          <span>5 days</span>
+        </div>
+        <div className="powder-days">
+          <span>2 days</span>
+        </div>
+        <div className="backcountry-days">
+          <span>1 hiking day</span>
+        </div>
+      </div>
+    )
+  }
+});
+```
+
+src/index.js
+```javascript
+import React from 'react'
+import { render } from 'react-dom'
+import { SkiDayCount } from './components/SkiDayCount'
+
+window.React = React;
+
+render(
+  <SkiDayCount />,
+  document.getElementById('react-container')
+);
+```
+
+![Creating components with createClass()](/images/03-02-creating-components-with-create-class.png)
+
+**Webpack Server Https** `Optional`
+
+![Webpack Server Https](/images/03-02-webpack-server-https.png)
+
+Add devServer https configuration inside `webpack.config.js`
+```
+    https: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+```
+
+webpack.config.js
+```javascript
+var path = require("path");
+
+module.exports = {
+  mode: "development",
+  entry: "./src/index.js",
+  output: {
+    path: path.resolve(__dirname, "dist/assets"),
+    publicPath: "/assets/",
+    filename: "bundle.js"
+  },
+  devServer: {
+    inline: true,
+    contentBase: "./dist",
+    port: 3000,
+    https: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+  },
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      loader: "babel-loader",
+      options: {
+        presets: ["latest", "react", "stage-0"]
+      }
+    },{
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    },{
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+    }]
+  }
+};
+```
+
+Display application on web browser using the url below.
+```
+https://localhost:3000/
+```
+
+![Display application on web browser](/images/03-02-display-on-web-browser.png)
+
+More about [`devServer.https`](https://webpack.js.org/configuration/dev-server/#devserver-https).
+
+**Coffeescript** `Optional`
+
+Use `.coffee` instead of `.js`
+
+![Coffeescript](/images/03-02-coffeescript.png)
+
+Install Coffee Script Loader.
+```
+npm install --save-dev coffee-loader coffeescript react-dom-factories
+npm list --depth=0
+```
+
+Change `index.js` to `index.coffee` inside `webpack.config.js`
+```
+  entry: "./src/index.coffee",
+```
+
+Remove `js` configuration inside `webpack.config.js`
+```
+    {
+      test: /\.js$/,
+      exclude: /(node_modules)/,
+      loader: "babel-loader",
+      options: {
+        presets: ["latest", "react", "stage-0"]
+      }
+    }
+```
+
+Set `babel presets` inside `transpile presets` instead. please see `coffee` configuration below.
+
+| Name | Description |
+|:----:|:-----------:|
+|[**`transpile`**](https://github.com/webpack-contrib/coffee-loader#transpile)|Provide Babel presets and plugins|
+
+More about [coffee-loader options](https://github.com/webpack-contrib/coffee-loader#options).
+
+Add `coffee` configuration inside `webpack.config.js`
+```
+    {
+      test: /\.coffee$/,
+      use: [
+        {
+          loader: 'coffee-loader',
+          options: {
+            transpile: {
+              presets: ["latest", "react", "stage-0"]
+            }
+          }
+        }
+      ]
+    }
+```
+
+webpack.config.js
+```javascript
+var path = require("path");
+
+module.exports = {
+  mode: "development",
+  entry: "./src/index.coffee",
+  output: {
+    path: path.resolve(__dirname, "dist/assets"),
+    publicPath: "/assets/",
+    filename: "bundle.js"
+  },
+  devServer: {
+    inline: true,
+    contentBase: "./dist",
+    port: 3000,
+    https: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+  },
+  module: {
+    rules: [{
+      test: /\.coffee$/,
+      use: [
+        {
+          loader: 'coffee-loader',
+          options: {
+            transpile: {
+              presets: ["latest", "react", "stage-0"]
+            }
+          }
+        }
+      ]
+    },{
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader']
+    },{
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+    }]
+  }
+};
+```
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee            (Create new file)
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       └── SkiDayCount.coffee    (Create new file)
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import { render } from 'react-dom'
+import { SkiDayCount } from './components/SkiDayCount.coffee'
+
+render <SkiDayCount />, document.getElementById('react-container')
+```
+
+Install [ReactDOMFactories](https://www.npmjs.com/package/react-dom-factories).
+```
+npm install --save-dev react-dom-factories
+npm list --depth=0
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import {div, span} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+import '../stylesheets/ui.scss'
+
+export SkiDayCount = CreateReactClass
+  displayName: 'SkiDayCount'
+  render: ->
+    div {className: 'ski-day-count'},
+      div {className: 'total-days'},
+        span null, '5 days'
+      div {className: 'powder-days'},
+        span null, '2 days'
+      div {className: 'backcountry-days'},
+        span null, '1 hiking day'
+```
+
+Restart `npm` and display application on web browser.
+
+![Restart and display application on web browser](/images/03-02-restart-and-display-on-web-browser.png)
