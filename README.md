@@ -1047,3 +1047,59 @@ export SkiDayCount = CreateReactClass
 Restart `npm` and display application on web browser.
 
 ![Restart and display application on web browser](/images/03-02-restart-and-display-on-web-browser.png)
+
+### Adding component properties
+
+Add properties to `src/index.coffee`
+```
+total=50 powder=20 backcountry=10 goal=100
+```
+
+src/index.coffee (Using `JSX`)
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+
+render <SkiDayCount total={50} powder={20} backcountry={10} goal={100} />,
+  document.getElementById('react-container')
+```
+
+src/index.coffee (Using `React.createElement()` instead of `JSX`)
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+
+SkiDayCountProps = { total: 50, powder: 20, backcountry: 10, goal: 100 }
+
+render React.createElement(SkiDayCount, SkiDayCountProps),
+  document.getElementById('react-container')
+```
+
+More about [`JSX In Depth`](https://reactjs.org/docs/jsx-in-depth.html).
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import {div, span} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+import '../stylesheets/ui.scss'
+
+export SkiDayCount = CreateReactClass
+  displayName: 'SkiDayCount'
+  render: ->
+    div {className: 'ski-day-count'},
+      div {className: 'total-days'},
+        span null, this.props.total
+        span null, 'days'
+      div {className: 'powder-days'},
+        span null, this.props.powder
+        span null, 'days'
+      div {className: 'backcountry-days'},
+        span null, this.props.backcountry
+        span null, 'days'
+      div null,
+        span null, this.props.goal
+```
+
+![Adding component properties](/images/03-03-adding-component-properties.png)

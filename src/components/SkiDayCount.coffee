@@ -7,8 +7,13 @@ export SkiDayCount = CreateReactClass
   render: ->
     div {className: 'ski-day-count'},
       div {className: 'total-days'},
-        span null, '5 days'
+        span null, this.props.total
+        span null, 'days'
       div {className: 'powder-days'},
-        span null, '2 days'
+        span null, this.props.powder
+        span null, 'days'
       div {className: 'backcountry-days'},
-        span null, '1 hiking day'
+        span null, this.props.backcountry
+        span null, 'days'
+      div null,
+        span null, this.props.goal
