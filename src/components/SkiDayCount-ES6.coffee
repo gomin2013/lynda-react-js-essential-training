@@ -1,4 +1,5 @@
 import {Component} from 'react'
+import PropTypes from 'prop-types'
 import {div, span} from 'react-dom-factories'
 import {FaRegCalendarAlt} from 'react-icons/fa'
 import {TiWeatherSnow} from 'react-icons/ti'
@@ -28,4 +29,9 @@ export class SkiDayCount extends Component
       div null,
         span null, this.calcGoalProgress(this.props.total, this.props.goal)
 
-SkiDayCount.defaultProps = { total: 50, powder: 10, backcountry: 15, goal: 75 }
+SkiDayCount.defaultProps = { total: 'text', powder: 10, backcountry: 15, goal: 75 }
+
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number

@@ -1565,3 +1565,222 @@ export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
 ```
 
 ![Add default props with stateless functional components](/images/04-03-add-default-props-with-stateless-functional-components.png)
+
+### Validating with React.PropTypes
+
+Don't need to install `PropTypes` because it's included in [React package](https://github.com/facebook/react/blob/v16.2.0/packages/react/package.json#L27).
+
+**React.PropTypes with create class.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount-createClass.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount-createClass.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add prop types as object inside `SkiDayCount-createClass.coffee`
+```coffeescript
+  propTypes:
+    total: PropTypes.string
+    powder: PropTypes.number
+    backcountry: PropTypes.number
+```
+
+Test `string validation` by assigning propTypes as string inside `SkiDayCount-createClass.coffee`
+```coffeescript
+    total: PropTypes.string
+```
+
+src/components/SkiDayCount-createClass.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, span} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+export SkiDayCount = CreateReactClass
+
+  displayName: 'SkiDayCount'
+
+  propTypes:
+    total: PropTypes.string
+    powder: PropTypes.number
+    backcountry: PropTypes.number
+
+  getDefaultProps: () -> { total: 50, powder: 50, backcountry: 15, goal: 100 }
+
+  percentToDecimal: (decimal) -> ((decimal * 100) + '%')
+
+  calcGoalProgress: (total, goal) -> this.percentToDecimal(total / goal)
+
+  render: ->
+    div { className: 'ski-day-count' },
+      div { className: 'total-days' },
+        span null, this.props.total
+        FaRegCalendarAlt null
+        span null, 'days'
+      div { className: 'powder-days' },
+        span null, this.props.powder
+        TiWeatherSnow null
+        span null, 'days'
+      div { className: 'backcountry-days' },
+        span null, this.props.backcountry
+        MdTerrain null
+        span null, 'days'
+      div null,
+        span null, this.calcGoalProgress(this.props.total, this.props.goal)
+```
+
+![React.PropTypes with create class](/images/04-04-react-proptypes-with-create-class.png)
+
+**React.PropTypes with ES6 class syntax.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount-ES6.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount-ES6.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add prop types as object inside `SkiDayCount-ES6.coffee`
+```coffeescript
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+```
+
+Test `numerical validation` by changing `total` to string inside `SkiDayCount-ES6.coffee`
+```coffeescript
+SkiDayCount.defaultProps = { total: 'text', powder: 10, backcountry: 15, goal: 75 }
+```
+
+src/components/SkiDayCount-ES6.coffee
+```coffeescript
+import {Component} from 'react'
+import PropTypes from 'prop-types'
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+export class SkiDayCount extends Component
+
+  percentToDecimal: (decimal) -> ((decimal * 100) + '%')
+
+  calcGoalProgress: (total, goal) -> this.percentToDecimal(total / goal)
+
+  render: ->
+    div { className: 'ski-day-count' },
+      div { className: 'total-days' },
+        span null, this.props.total
+        FaRegCalendarAlt null
+        span null, 'days'
+      div { className: 'powder-days' },
+        span null, this.props.powder
+        TiWeatherSnow null
+        span null, 'days'
+      div { className: 'backcountry-days' },
+        span null, this.props.backcountry
+        MdTerrain null
+        span null, 'days'
+      div null,
+        span null, this.calcGoalProgress(this.props.total, this.props.goal)
+
+SkiDayCount.defaultProps = { total: 'text', powder: 10, backcountry: 15, goal: 75 }
+
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+```
+
+![React.PropTypes with ES6 class syntax](/images/04-04-react-proptypes-with-es6-class-syntax.png)
+
+**React.PropTypes with stateless functional components.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add prop types as object inside `SkiDayCount.coffee`
+```coffeescript
+SkiDayCount.propTypes =
+  total: PropTypes.number.isRequired
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+```
+
+Test `required attribute validation` by removing `total=70` inside `SkiDayCount.coffee`
+```coffeescript
+export SkiDayCount = ({powder=20, backcountry=10, goal=100}) ->
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+percentToDecimal = (decimal) -> ((decimal * 100) + '%')
+calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
+
+export SkiDayCount = ({powder=20, backcountry=10, goal=100}) ->
+  div { className: 'ski-day-count' },
+    div { className: 'total-days' },
+      span null, total
+      FaRegCalendarAlt null
+      span null, 'days'
+    div { className: 'powder-days' },
+      span null, powder
+      TiWeatherSnow null
+      span null, 'days'
+    div { className: 'backcountry-days' },
+      span null, backcountry
+      MdTerrain null
+      span null, 'days'
+    div null,
+      span null, calcGoalProgress(total, goal)
+
+SkiDayCount.propTypes =
+  total: PropTypes.number.isRequired
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+```
+
+![React.PropTypes with stateless functional components](/images/04-04-react-proptypes-with-stateless-functional-components.png)

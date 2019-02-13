@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import {div, span} from 'react-dom-factories'
 import CreateReactClass from 'create-react-class'
 import {FaRegCalendarAlt} from 'react-icons/fa'
@@ -8,6 +9,11 @@ import '../stylesheets/ui.scss'
 export SkiDayCount = CreateReactClass
 
   displayName: 'SkiDayCount'
+
+  propTypes:
+    total: PropTypes.string
+    powder: PropTypes.number
+    backcountry: PropTypes.number
 
   getDefaultProps: () -> { total: 50, powder: 50, backcountry: 15, goal: 100 }
 

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import {div, span} from 'react-dom-factories'
 import {FaRegCalendarAlt} from 'react-icons/fa'
 import {TiWeatherSnow} from 'react-icons/ti'
@@ -7,7 +8,7 @@ import '../stylesheets/ui.scss'
 percentToDecimal = (decimal) -> ((decimal * 100) + '%')
 calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
 
-export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
+export SkiDayCount = ({powder=20, backcountry=10, goal=100}) ->
   div { className: 'ski-day-count' },
     div { className: 'total-days' },
       span null, total
@@ -23,3 +24,8 @@ export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
       span null, 'days'
     div null,
       span null, calcGoalProgress(total, goal)
+
+SkiDayCount.propTypes =
+  total: PropTypes.number.isRequired
+  powder: PropTypes.number
+  backcountry: PropTypes.number
