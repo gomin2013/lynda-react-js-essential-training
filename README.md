@@ -1259,3 +1259,105 @@ Find more `icon name` and `react-icons directory`.
 | [`Typicons`](http://react-icons.github.io/react-icons/ti.html) | A Free Icon Font by Stephen Hutchings kit. |
 | [`Github Octicons`](http://react-icons.github.io/react-icons/go.html) | Octicons are a scalable set of icons handcrafted with <3 by GitHub. |
 | [`Ionicons `](http://react-icons.github.io/react-icons/io.html) | The premium icon font for Ionic Framework. |
+
+## 04 Props and State
+### Composing components & Displaying child components
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       ├── SkiDayCount.coffee
+  │       ├── SkiDayList.coffee   (Create new file)
+  │       └── SkiDayRow.coffee    (Create new file)
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+Change import component inside `index.coffee`
+```
+import {SkiDayList} from './components/SkiDayList.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayList} from './components/SkiDayList.coffee'
+
+SkiDayListProps =
+  days: [
+    {
+      resort: "Squaw Valley"
+      date: new Date("1/2/2016")
+      powder: true
+      backcountry: false
+    }
+    {
+      resort: "Kirkwood"
+      date: new Date("3/28/2016")
+      powder: false
+      backcountry: false
+    }
+    {
+      resort: "Mt. Tallac"
+      date: new Date("4/2/2016")
+      powder: false
+      backcountry: true
+    }
+  ]
+
+render React.createElement(SkiDayList, SkiDayListProps),
+  document.getElementById('react-container')
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React from 'react'
+import {table, thead, tbody, tr, th} from 'react-dom-factories'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days}) ->
+  table null,
+    thead null,
+      tr null,
+        th null, 'Date'
+        th null, 'Resort'
+        th null, 'Powder'
+        th null, 'Backcountry'
+    tbody null,
+      days.map (day, i) ->
+        day.key = i
+        React.createElement(SkiDayRow, day)
+```
+
+src/components/SkiDayRow.coffee
+```coffeescript
+import {tr, td} from 'react-dom-factories'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+
+export SkiDayRow = ({resort, date, powder, backcountry}) ->
+  tr null,
+    td null,
+      "#{date.getMonth() + 1}/#{date.getDate()}/#{date.getFullYear()}"
+    td null,
+      resort
+    td null,
+      if powder then TiWeatherSnow null else null
+    td null,
+      if backcountry then MdTerrain null else null
+```
+
+![Composing components & Displaying child components](/images/04-01-composing-components-and-displaying-child-components.png)
