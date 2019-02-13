@@ -1361,3 +1361,207 @@ export SkiDayRow = ({resort, date, powder, backcountry}) ->
 ```
 
 ![Composing components & Displaying child components](/images/04-01-composing-components-and-displaying-child-components.png)
+
+### Default props
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       ├── SkiDayCount.coffee
+  │       ├── SkiDayCount-createClass.coffee    (Create new file)
+  │       ├── SkiDayCount-ES6.coffee            (Create new file)
+  │       ├── SkiDayList.coffee
+  │       └── SkiDayRow.coffee
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+**Add default props with create class.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount-createClass.coffee'
+```
+
+Create react element without `props` inside `index.coffee`
+```coffeescript
+React.createElement(SkiDayCount)
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount-createClass.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add default props using `getDefaultProps` inside `SkiDayCount-createClass.coffee`
+```coffeescript
+getDefaultProps: () -> { total: 50, powder: 50, backcountry: 15, goal: 100 }
+```
+
+src/components/SkiDayCount-createClass.coffee
+```coffeescript
+import {div, span} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+export SkiDayCount = CreateReactClass
+
+  displayName: 'SkiDayCount'
+
+  getDefaultProps: () -> { total: 50, powder: 50, backcountry: 15, goal: 100 }
+
+  percentToDecimal: (decimal) -> ((decimal * 100) + '%')
+
+  calcGoalProgress: (total, goal) -> this.percentToDecimal(total / goal)
+
+  render: ->
+    div { className: 'ski-day-count' },
+      div { className: 'total-days' },
+        span null, this.props.total
+        FaRegCalendarAlt null
+        span null, 'days'
+      div { className: 'powder-days' },
+        span null, this.props.powder
+        TiWeatherSnow null
+        span null, 'days'
+      div { className: 'backcountry-days' },
+        span null, this.props.backcountry
+        MdTerrain null
+        span null, 'days'
+      div null,
+        span null, this.calcGoalProgress(this.props.total, this.props.goal)
+```
+
+![Add default props with create class](/images/04-03-add-default-props-with-create-class.png)
+
+**Add default props with ES6 class syntax.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount-ES6.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount-ES6.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add default props using `SkiDayCount.defaultProps` inside `SkiDayCount-ES6.coffee`
+```coffeescript
+SkiDayCount.defaultProps = { total: 50, powder: 10, backcountry: 15, goal: 75 }
+```
+
+src/components/SkiDayCount-ES6.coffee
+```coffeescript
+import {Component} from 'react'
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+export class SkiDayCount extends Component
+
+  percentToDecimal: (decimal) -> ((decimal * 100) + '%')
+
+  calcGoalProgress: (total, goal) -> this.percentToDecimal(total / goal)
+
+  render: ->
+    div { className: 'ski-day-count' },
+      div { className: 'total-days' },
+        span null, this.props.total
+        FaRegCalendarAlt null
+        span null, 'days'
+      div { className: 'powder-days' },
+        span null, this.props.powder
+        TiWeatherSnow null
+        span null, 'days'
+      div { className: 'backcountry-days' },
+        span null, this.props.backcountry
+        MdTerrain null
+        span null, 'days'
+      div null,
+        span null, this.calcGoalProgress(this.props.total, this.props.goal)
+
+SkiDayCount.defaultProps = { total: 50, powder: 10, backcountry: 15, goal: 75 }
+```
+
+![Add default props with ES6 class syntax](/images/04-03-add-default-props-with-es6-class-syntax.png)
+
+**Add default props with stateless functional components.**
+
+Change import `SkiDayCount` inside `index.coffee`
+```coffeescript
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayCount} from './components/SkiDayCount.coffee'
+
+render React.createElement(SkiDayCount),
+  document.getElementById('react-container')
+```
+
+Add default props as `function arguments` inside `SkiDayCount-ES6.coffee`
+```coffeescript
+export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+percentToDecimal = (decimal) -> ((decimal * 100) + '%')
+calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
+
+export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
+  div { className: 'ski-day-count' },
+    div { className: 'total-days' },
+      span null, total
+      FaRegCalendarAlt null
+      span null, 'days'
+    div { className: 'powder-days' },
+      span null, powder
+      TiWeatherSnow null
+      span null, 'days'
+    div { className: 'backcountry-days' },
+      span null, backcountry
+      MdTerrain null
+      span null, 'days'
+    div null,
+      span null, calcGoalProgress(total, goal)
+```
+
+![Add default props with stateless functional components](/images/04-03-add-default-props-with-stateless-functional-components.png)
