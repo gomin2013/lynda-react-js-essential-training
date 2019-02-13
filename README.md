@@ -1194,3 +1194,68 @@ export SkiDayCount = ({total, powder, backcountry, goal}) ->
 ```
 
 ![Creating stateless functional components](/images/03-06-creating-stateless-functional-components.png)
+
+### Adding react-icons
+
+![React Icons](/images/03-07-react-icons.png)
+
+Install React Icons.
+```
+npm install react-icons --save
+npm list --depth=0
+```
+
+Import React Icons as `icon name` from `react-icons directory` inside `SkiDayCount.coffee`
+```coffeescript
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+```
+
+Use `icon name` as `tag element` inside `SkiDayCount.coffee`
+```coffeescript
+      FaRegCalendarAlt null
+      TiWeatherSnow null
+      MdTerrain null
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+percentToDecimal = (decimal) -> ((decimal * 100) + '%')
+calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
+
+export SkiDayCount = ({total, powder, backcountry, goal}) ->
+  div { className: 'ski-day-count' },
+    div { className: 'total-days' },
+      span null, total
+      FaRegCalendarAlt null
+      span null, 'days'
+    div { className: 'powder-days' },
+      span null, powder
+      TiWeatherSnow null
+      span null, 'days'
+    div { className: 'backcountry-days' },
+      span null, backcountry
+      MdTerrain null
+      span null, 'days'
+    div null,
+      span null, calcGoalProgress(total, goal)
+```
+
+![Adding react-icons](/images/03-07-adding-react-icons.png)
+
+Find more `icon name` and `react-icons directory`.
+
+| icon directory | description |
+|:--------------:|:-----------:|
+| [`Font Awesome`](http://react-icons.github.io/react-icons/fa.html) | The web's most popular icon set. |
+| [`Material`](http://react-icons.github.io/react-icons/md.html) | Material Design icons by Google. |
+| [`Typicons`](http://react-icons.github.io/react-icons/ti.html) | A Free Icon Font by Stephen Hutchings kit. |
+| [`Github Octicons`](http://react-icons.github.io/react-icons/go.html) | Octicons are a scalable set of icons handcrafted with <3 by GitHub. |
+| [`Ionicons `](http://react-icons.github.io/react-icons/io.html) | The premium icon font for Ionic Framework. |
