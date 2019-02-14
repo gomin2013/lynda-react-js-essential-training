@@ -1987,3 +1987,110 @@ SkiDayRow.propTypes =
   powder: PropTypes.bool
   backcountry: PropTypes.bool
 ```
+
+### Working with state
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       ├── App.coffee    (Create new file)
+  │       ├── SkiDayCount.coffee
+  │       ├── SkiDayList.coffee
+  │       └── SkiDayRow.coffee
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+Change import component inside `index.coffee`
+```
+import {App} from './components/App.coffee'
+```
+
+Create react element inside `index.coffee`
+```coffeescript
+React.createElement(App)
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {App} from './components/App.coffee'
+
+render React.createElement(App),
+  document.getElementById('react-container')
+```
+
+Add `getInitialState` includes `allSkiDays` inside `App.coffee`
+```coffeescript
+  getInitialState: ->
+    allSkiDays: [
+      {
+        resort: 'Squaw Valley'
+        date: new Date('1/2/2016')
+        powder: true
+        backcountry: false
+      }
+      {
+        resort: 'Kirkwood'
+        date: new Date('3/28/2016')
+        powder: false
+        backcountry: false
+      }
+      {
+        resort: 'Mt. Tallac'
+        date: new Date('4/2/2016')
+        powder: false
+        backcountry: true
+      }
+    ]
+```
+
+src/components/App.coffee
+```coffeescript
+import {div} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+
+export App = CreateReactClass
+  displayName: 'App'
+
+  getInitialState: ->
+    allSkiDays: [
+      {
+        resort: 'Squaw Valley'
+        date: new Date('1/2/2016')
+        powder: true
+        backcountry: false
+      }
+      {
+        resort: 'Kirkwood'
+        date: new Date('3/28/2016')
+        powder: false
+        backcountry: false
+      }
+      {
+        resort: 'Mt. Tallac'
+        date: new Date('4/2/2016')
+        powder: false
+        backcountry: true
+      }
+    ]
+
+  render: ->
+    div { className: 'app' },
+      this.state.allSkiDays[0]['resort']
+```
+
+![Working with state](/images/04-06-working-with-state.png)
