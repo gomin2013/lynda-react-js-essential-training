@@ -14,3 +14,12 @@ export SkiDayList = ({days}) ->
       days.map (day, i) ->
         day.key = i
         React.createElement(SkiDayRow, day)
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null

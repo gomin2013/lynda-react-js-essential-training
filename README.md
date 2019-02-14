@@ -1784,3 +1784,206 @@ SkiDayCount.propTypes =
 ```
 
 ![React.PropTypes with stateless functional components](/images/04-04-react-proptypes-with-stateless-functional-components.png)
+
+### Custom validation
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayList} from './components/SkiDayList.coffee'
+import './stylesheets/ui.scss'
+
+SkiDayListProps =
+  days: [
+    {
+      resort: "Squaw Valley"
+      date: new Date("1/2/2016")
+      powder: true
+      backcountry: false
+    }
+    {
+      resort: "Kirkwood"
+      date: new Date("3/28/2016")
+      powder: false
+      backcountry: false
+    }
+    {
+      resort: "Mt. Tallac"
+      date: new Date("4/2/2016")
+      powder: false
+      backcountry: true
+    }
+  ]
+
+render React.createElement(SkiDayList, SkiDayListProps),
+  document.getElementById('react-container')
+```
+
+Add a conditional prop type as object inside `SkiDayList.coffee`
+```coffeescript
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React from 'react'
+import {table, thead, tbody, tr, th} from 'react-dom-factories'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days}) ->
+  table null,
+    thead null,
+      tr null,
+        th null, 'Date'
+        th null, 'Resort'
+        th null, 'Powder'
+        th null, 'Backcountry'
+    tbody null,
+      days.map (day, i) ->
+        day.key = i
+        React.createElement(SkiDayRow, day)
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+**Test conditional validation with string.**
+
+Test `SkiDayList` conditional validation by changing array to string inside `index.coffee`
+```
+SkiDayListProps =
+  days: 'lots of days'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayList} from './components/SkiDayList.coffee'
+import './stylesheets/ui.scss'
+
+SkiDayListProps =
+  days: 'lots of days'
+
+render React.createElement(SkiDayList, SkiDayListProps),
+  document.getElementById('react-container')
+```
+
+![Test conditional validation with string](/images/04-05-test-conditional-validation-with-string.png)
+
+**Test conditional validation with empty array.**
+
+Test `SkiDayList` conditional validation by changing to empty array inside `index.coffee`
+```
+SkiDayListProps =
+  days: []
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {SkiDayList} from './components/SkiDayList.coffee'
+import './stylesheets/ui.scss'
+
+SkiDayListProps =
+  days: []
+
+render React.createElement(SkiDayList, SkiDayListProps),
+  document.getElementById('react-container')
+```
+
+![Test conditional validation with empty array](/images/04-05-test-conditional-validation-with-empty-array.png)
+
+Add prop types as object inside `SkiDayCount.coffee`
+```coffeescript
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+  goal: PropTypes.number
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+percentToDecimal = (decimal) -> ((decimal * 100) + '%')
+calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
+
+export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
+  div { className: 'ski-day-count' },
+    div { className: 'total-days' },
+      span null, total
+      FaRegCalendarAlt null
+      span null, 'days'
+    div { className: 'powder-days' },
+      span null, powder
+      TiWeatherSnow null
+      span null, 'days'
+    div { className: 'backcountry-days' },
+      span null, backcountry
+      MdTerrain null
+      span null, 'days'
+    div null,
+      span null, calcGoalProgress(total, goal)
+
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+  goal: PropTypes.number
+```
+
+Add prop types as object inside `SkiDayRow.coffee`
+```coffeescript
+SkiDayRow.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.instanceOf(Date).isRequired
+  powder: PropTypes.bool
+  backcountry: PropTypes.bool
+```
+
+src/components/SkiDayRow.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {tr, td} from 'react-dom-factories'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+
+export SkiDayRow = ({resort, date, powder, backcountry}) ->
+  tr null,
+    td null,
+      "#{date.getMonth() + 1}/#{date.getDate()}/#{date.getFullYear()}"
+    td null,
+      resort
+    td null,
+      if powder then TiWeatherSnow null else null
+    td null,
+      if backcountry then MdTerrain null else null
+
+SkiDayRow.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.instanceOf(Date).isRequired
+  powder: PropTypes.bool
+  backcountry: PropTypes.bool
+```

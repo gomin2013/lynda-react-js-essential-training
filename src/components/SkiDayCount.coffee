@@ -8,7 +8,7 @@ import '../stylesheets/ui.scss'
 percentToDecimal = (decimal) -> ((decimal * 100) + '%')
 calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
 
-export SkiDayCount = ({powder=20, backcountry=10, goal=100}) ->
+export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
   div { className: 'ski-day-count' },
     div { className: 'total-days' },
       span null, total
@@ -26,6 +26,7 @@ export SkiDayCount = ({powder=20, backcountry=10, goal=100}) ->
       span null, calcGoalProgress(total, goal)
 
 SkiDayCount.propTypes =
-  total: PropTypes.number.isRequired
+  total: PropTypes.number
   powder: PropTypes.number
   backcountry: PropTypes.number
+  goal: PropTypes.number
