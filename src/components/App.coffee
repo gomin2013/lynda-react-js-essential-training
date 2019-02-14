@@ -1,5 +1,8 @@
+import React from 'react'
 import {div} from 'react-dom-factories'
 import CreateReactClass from 'create-react-class'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
 
 export App = CreateReactClass
   displayName: 'App'
@@ -26,6 +29,15 @@ export App = CreateReactClass
       }
     ]
 
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
   render: ->
     div { className: 'app' },
-      this.state.allSkiDays[0]['resort']
+      React.createElement(SkiDayList, { days: this.state.allSkiDays })
+      React.createElement(SkiDayCount, {
+        total: this.countDays()
+        powder: this.countDays('powder')
+        backcountry: this.countDays('backcountry')
+      })

@@ -2094,3 +2094,95 @@ export App = CreateReactClass
 ```
 
 ![Working with state](/images/04-06-working-with-state.png)
+
+### Passing state as props
+
+Add import style inside `index.coffee`
+```coffeescript
+import './stylesheets/ui.scss'
+```
+
+src/index.coffee
+```coffeescript
+import React from 'react'
+import {render} from 'react-dom'
+import {App} from './components/App.coffee'
+import './stylesheets/ui.scss'
+
+render React.createElement(App),
+  document.getElementById('react-container')
+```
+
+Add import components inside `App.coffee`
+```coffeescript
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+```
+
+Create `countDays` function inside `App.coffee`
+```coffeescript
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+```
+
+Insert components with props inside `App.coffee`
+```coffeescript
+  render: ->
+    div { className: 'app' },
+      React.createElement(SkiDayList, { days: this.state.allSkiDays })
+      React.createElement(SkiDayCount, {
+        total: this.countDays()
+        powder: this.countDays('powder')
+        backcountry: this.countDays('backcountry')
+      })
+```
+
+src/components/App.coffee
+```coffeescript
+import React from 'react'
+import {div} from 'react-dom-factories'
+import CreateReactClass from 'create-react-class'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export App = CreateReactClass
+  displayName: 'App'
+
+  getInitialState: ->
+    allSkiDays: [
+      {
+        resort: 'Squaw Valley'
+        date: new Date('1/2/2016')
+        powder: true
+        backcountry: false
+      }
+      {
+        resort: 'Kirkwood'
+        date: new Date('3/28/2016')
+        powder: false
+        backcountry: false
+      }
+      {
+        resort: 'Mt. Tallac'
+        date: new Date('4/2/2016')
+        powder: false
+        backcountry: true
+      }
+    ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      React.createElement(SkiDayList, { days: this.state.allSkiDays })
+      React.createElement(SkiDayCount, {
+        total: this.countDays()
+        powder: this.countDays('powder')
+        backcountry: this.countDays('backcountry')
+      })
+```
+
+![Passing state as props](/images/04-07-passing-state-as-props.png)
