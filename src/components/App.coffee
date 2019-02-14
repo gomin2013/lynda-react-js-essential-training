@@ -1,33 +1,33 @@
-import React from 'react'
+import React, {Component} from 'react'
 import {div} from 'react-dom-factories'
-import CreateReactClass from 'create-react-class'
 import {SkiDayList} from './SkiDayList.coffee'
 import {SkiDayCount} from './SkiDayCount.coffee'
 
-export App = CreateReactClass
-  displayName: 'App'
+export class App extends Component
 
-  getInitialState: ->
-    allSkiDays: [
-      {
-        resort: 'Squaw Valley'
-        date: new Date('1/2/2016')
-        powder: true
-        backcountry: false
-      }
-      {
-        resort: 'Kirkwood'
-        date: new Date('3/28/2016')
-        powder: false
-        backcountry: false
-      }
-      {
-        resort: 'Mt. Tallac'
-        date: new Date('4/2/2016')
-        powder: false
-        backcountry: true
-      }
-    ]
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
 
   countDays: (filter) ->
     this.state.allSkiDays
