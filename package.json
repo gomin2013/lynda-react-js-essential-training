@@ -28,6 +28,7 @@
   "dependencies": {
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-icons": "^3.4.0"
+    "react-icons": "^3.4.0",
+    "react-router-dom": "^4.3.1"
   }
 }

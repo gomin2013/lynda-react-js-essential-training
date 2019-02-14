@@ -2267,3 +2267,256 @@ export class App extends Component
         backcountry: this.countDays('backcountry')
       })
 ```
+
+## 05 Using the React Router
+### Incorporating the router
+
+![React Router](/images/05-01-react-router.png)
+
+Install React Router.
+```
+npm install --save react-router-dom
+npm list --depth=0
+```
+
+**BrowserRouter**
+
+Import `createElement` as `ele` inside `index.coffee`
+```coffeescript
+import React, {createElement as ele} from 'react'
+```
+
+Import `react-dom-factories` inside `index.coffee`
+```coffeescript
+import {div, ul, li, h1} from 'react-dom-factories'
+```
+
+Import `react-router-dom` as `BrowserRouter` inside `index.coffee`
+```coffeescript
+import {BrowserRouter, Switch, Route, Link } from 'react-router-dom'
+```
+
+Add React elements inside `index.coffee`
+```coffeescript
+Home = ->
+  h1 null,
+    'Welcome to Home Page.'
+
+About = ->
+  h1 null,
+    'About Page.'
+
+NotFound = ->
+  h1 null,
+    'Not Found!'
+```
+
+Add route elements inside `index.coffee`
+```coffeescript
+routes =
+  ele BrowserRouter, null,
+    div null,
+      ul null,
+        li null,
+          ele Link, {to: '/'}, 'Home'
+        li null,
+          ele Link, {to: '/about'}, 'About'
+        li null,
+          ele Link, {to: '/test-a'}, 'Test A'
+        li null,
+          ele Link, {to: '/test-b'}, 'Test B'
+        li null,
+          ele Link, {to: '/test-c'}, 'Test C'
+      ele Switch, null,
+        ele Route, { path: '/', exact: true, component: Home }
+        ele Route, { path: '/about', exact: true, component: About }
+        ele Route, { component: NotFound }
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {div, ul, li, h1} from 'react-dom-factories'
+import {BrowserRouter, Switch, Route, Link } from 'react-router-dom'
+
+Home = ->
+  h1 null,
+    'Welcome to Home Page.'
+
+About = ->
+  h1 null,
+    'About Page.'
+
+NotFound = ->
+  h1 null,
+    'Not Found!'
+
+routes =
+  ele BrowserRouter, null,
+    div null,
+      ul null,
+        li null,
+          ele Link, {to: '/'}, 'Home'
+        li null,
+          ele Link, {to: '/about'}, 'About'
+        li null,
+          ele Link, {to: '/test-a'}, 'Test A'
+        li null,
+          ele Link, {to: '/test-b'}, 'Test B'
+        li null,
+          ele Link, {to: '/test-c'}, 'Test C'
+      ele Switch, null,
+        ele Route, { path: '/', exact: true, component: Home }
+        ele Route, { path: '/about', exact: true, component: About }
+        ele Route, { component: NotFound }
+
+render routes, document.getElementById('react-container')
+```
+
+Will render components without reload the browser<br>
+and when clicking on `Test A`, `Test B` & `Test C` will render the `NotFound` component.
+
+![BrowserRouter](/images/05-01-browser-router.gif)
+
+`BrowserRouter` will not render components when reload the browser.
+
+![BrowserRouter not working after reload browser](/images/05-01-browser-router-not-working-after-reload-browser.gif)
+
+More about [`BrowserRouter`](https://reacttraining.com/react-router/web/api/BrowserRouter)
+
+**HashRouter**
+
+Import `react-dom-factories` inside `index.coffee`
+```coffeescript
+import {h1} from 'react-dom-factories'
+```
+
+Import `react-router-dom` as `HashRouter` inside `index.coffee`
+```coffeescript
+import {HashRouter, Route, Switch} from 'react-router-dom'
+```
+
+Add route elements inside `index.coffee`
+```coffeescript
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: Home }
+      ele Route, { path: '/about', exact: true, component: About }
+      ele Route, { component: NotFound }
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {h1} from 'react-dom-factories'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+
+Home = ->
+  h1 null,
+    'Welcome to Home Page.'
+
+About = ->
+  h1 null,
+    'About Page.'
+
+NotFound = ->
+  h1 null,
+    'Not Found!'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: Home }
+      ele Route, { path: '/about', exact: true, component: About }
+      ele Route, { component: NotFound }
+
+render routes, document.getElementById('react-container')
+```
+
+HashRouter will append URL with `/#/`
+
+![HashRouter](/images/05-01-hash-router.gif)
+
+`HashRouter` will render components when reload the browser.
+
+![HashRouter not working after reload browser](/images/05-01-hash-router-working-after-reload-browser.gif)
+
+More about [`HashRouter`](https://reacttraining.com/react-router/web/api/HashRouter)
+
+**Create 404 not found page using HashRouter.**
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       ├── App.coffee
+  │       ├── SkiDayCount.coffee
+  │       ├── SkiDayList.coffee
+  │       ├── SkiDayRow.coffee
+  │       └── Whoops404.coffee    (Create new file)
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+Import `App` and `Whoops404` elements inside `index.coffee`
+```coffeescript
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+```
+
+Add import style inside `index.coffee`
+```coffeescript
+import './stylesheets/ui.scss'
+```
+
+Add route elements inside `index.coffee`
+```coffeescript
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+
+src/components/Whoops404.coffee
+```coffeescript
+import {div, h1} from 'react-dom-factories'
+
+export Whoops404 = ->
+  div null,
+    h1 null, 'Whoops, route not found'
+```
+
+![Incorporating the router](/images/05-01-incorporating-the-router.gif)
