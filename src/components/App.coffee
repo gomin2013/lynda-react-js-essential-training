@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, createElement as ele} from 'react'
 import {div} from 'react-dom-factories'
 import {SkiDayList} from './SkiDayList.coffee'
 import {SkiDayCount} from './SkiDayCount.coffee'
@@ -35,9 +35,11 @@ export class App extends Component
 
   render: ->
     div { className: 'app' },
-      React.createElement(SkiDayList, { days: this.state.allSkiDays })
-      React.createElement(SkiDayCount, {
-        total: this.countDays()
-        powder: this.countDays('powder')
-        backcountry: this.countDays('backcountry')
-      })
+      if this.props.location.pathname == '/'
+        ele SkiDayCount, {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else
+        ele SkiDayList, { days: this.state.allSkiDays }

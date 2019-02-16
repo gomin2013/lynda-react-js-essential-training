@@ -2296,7 +2296,7 @@ Import `react-router-dom` as `BrowserRouter` inside `index.coffee`
 import {BrowserRouter, Switch, Route, Link } from 'react-router-dom'
 ```
 
-Add React elements inside `index.coffee`
+Add React components inside `index.coffee`
 ```coffeescript
 Home = ->
   h1 null,
@@ -2472,7 +2472,7 @@ Create new files.
   └── webpack.config.js
 ```
 
-Import `App` and `Whoops404` elements inside `index.coffee`
+Import `App` and `Whoops404` components inside `index.coffee`
 ```coffeescript
 import {App} from './components/App.coffee'
 import {Whoops404} from './components/Whoops404.coffee'
@@ -2520,3 +2520,148 @@ export Whoops404 = ->
 ```
 
 ![Incorporating the router](/images/05-01-incorporating-the-router.gif)
+
+### Setting up routes
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── node_modules
+  ├── src
+  │   ├── index.coffee
+  │   ├── stylesheets
+  │   │   ├── globals.scss
+  │   │   ├── index.scss
+  │   │   └── ui.scss
+  │   └── components
+  │       ├── AddDayForm.coffee    (Create new file)
+  │       ├── App.coffee
+  │       ├── SkiDayCount.coffee
+  │       ├── SkiDayList.coffee
+  │       ├── SkiDayRow.coffee
+  │       └── Whoops404.coffee
+  ├── postcss.config.js
+  └── webpack.config.js
+```
+
+Import `AddDayForm` component inside `index.coffee`
+```coffeescript
+import {AddDayForm} from './components/AddDayForm.coffee'
+```
+
+Add route elements inside `index.coffee`
+```coffeescript
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/add-day', exact: true, component: AddDayForm }
+      ele Route, { component: Whoops404 }
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {AddDayForm} from './components/AddDayForm.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/add-day', exact: true, component: AddDayForm }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+`/` and `/list-days` paths use the same component (`App`)<br>
+will add `pathname condition` to render `App` components.
+
+
+Import `createElement` as `ele` inside `App.coffee`
+```coffeescript
+import React, {Component, createElement as ele} from 'react'
+```
+
+Change the render method by adding `pathname condition` inside `App.coffee`
+```coffeescript
+  render: ->
+    div { className: 'app' },
+      if this.props.location.pathname == '/'
+        ele SkiDayCount, {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else
+        ele SkiDayList, { days: this.state.allSkiDays }
+```
+
+src/components/App.coffee
+```coffeescript
+import React, {Component, createElement as ele} from 'react'
+import {div} from 'react-dom-factories'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      if this.props.location.pathname == '/'
+        ele SkiDayCount, {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else
+        ele SkiDayList, { days: this.state.allSkiDays }
+```
+
+src/components/AddDayForm.coffee
+```coffeescript
+import {h1} from 'react-dom-factories'
+
+export AddDayForm = ->
+  h1 null, 'Add A Day.'
+```
+
+![Setting up routes](/images/05-02-setting-up-routes.gif)
