@@ -10,6 +10,7 @@ routes =
     ele Switch, null,
       ele Route, { path: '/', exact: true, component: App }
       ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/list-days/:filter(powder|backcountry)', component: App }
       ele Route, { path: '/add-day', exact: true, component: App }
       ele Route, { component: Whoops404 }
 

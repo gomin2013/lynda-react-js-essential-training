@@ -1,8 +1,12 @@
-import React from 'react'
-import {table, thead, tbody, tr, th} from 'react-dom-factories'
+import React, {createElement as ele} from 'react'
+import {table, thead, tbody, tr, th, td} from 'react-dom-factories'
+import {Link} from 'react-router-dom'
 import {SkiDayRow} from './SkiDayRow.coffee'
 
-export SkiDayList = ({days}) ->
+export SkiDayList = ({days, filter}) ->
+
+  filteredDays = if !filter then days else days.filter (day) -> day[filter]
+
   table null,
     thead null,
       tr null,
@@ -10,10 +14,15 @@ export SkiDayList = ({days}) ->
         th null, 'Resort'
         th null, 'Powder'
         th null, 'Backcountry'
+      tr null,
+        td { colSpan: 4 },
+          ele Link, { to: '/list-days' }, 'All Days'
+          ele Link, { to: '/list-days/powder' }, 'Powder Days'
+          ele Link, { to: '/list-days/backcountry' }, 'Backcountry Days'
     tbody null,
-      days.map (day, i) ->
+      filteredDays.map (day, i) ->
         day.key = i
-        React.createElement(SkiDayRow, day)
+        ele SkiDayRow, day
 
 SkiDayList.propTypes =
   days: (props) ->

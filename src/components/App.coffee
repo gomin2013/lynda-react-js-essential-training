@@ -44,7 +44,7 @@ export class App extends Component
           powder: this.countDays('powder')
           backcountry: this.countDays('backcountry')
         }
-      else if this.props.location.pathname == '/list-days'
-        SkiDayList { days: this.state.allSkiDays }
-      else
+      else if this.props.location.pathname == '/add-day'
         AddDayForm null
+      else
+        SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }

@@ -2799,3 +2799,120 @@ export Menu = ->
 ```
 
 ![Navigating with the link component](/images/05-03-navigating-with-the-link-component.gif)
+
+### Using route parameters
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/list-days/:filter(powder|backcountry)', component: App }
+      ele Route, { path: '/add-day', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+
+src/components/App.coffee
+```coffeescript
+import React, {Component} from 'react'
+import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      Menu null
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/add-day'
+        AddDayForm null
+      else
+        SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {table, thead, tbody, tr, th, td} from 'react-dom-factories'
+import {Link} from 'react-router-dom'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days, filter}) ->
+
+  filteredDays = if !filter then days else days.filter (day) -> day[filter]
+
+  table null,
+    thead null,
+      tr null,
+        th null, 'Date'
+        th null, 'Resort'
+        th null, 'Powder'
+        th null, 'Backcountry'
+      tr null,
+        td { colSpan: 4 },
+          ele Link, { to: '/list-days' }, 'All Days'
+          ele Link, { to: '/list-days/powder' }, 'Powder Days'
+          ele Link, { to: '/list-days/backcountry' }, 'Backcountry Days'
+    tbody null,
+      filteredDays.map (day, i) ->
+        day.key = i
+        ele SkiDayRow, day
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+![Using route parameters](/images/05-04-using-route-parameters.gif)
