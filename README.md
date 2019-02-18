@@ -2665,3 +2665,137 @@ export AddDayForm = ->
 ```
 
 ![Setting up routes](/images/05-02-setting-up-routes.gif)
+
+### Navigating with the link component
+
+Remove import `AddDayForm` inside `index.coffee`
+```coffeescript
+import {AddDayForm} from './components/AddDayForm.coffee'
+```
+
+Change the component of `/add-day` to render `App` instead of `AddDayForm` inside `index.coffee`
+```coffeescript
+      ele Route, { path: '/add-day', exact: true, component: App }
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/add-day', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+
+Add import `Menu` component inside `App.coffee`
+```coffeescript
+import {Menu} from './Menu.coffee'
+```
+
+Add the `Menu` component as an element inside `App.coffee`.
+```coffeescript
+      Menu null
+```
+
+Change `pathname condition` inside `App.coffee`.
+```coffeescript
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/list-days'
+        SkiDayList { days: this.state.allSkiDays }
+      else
+        AddDayForm null
+```
+
+src/components/App.coffee
+```coffeescript
+import React, {Component} from 'react'
+import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      Menu null
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/list-days'
+        SkiDayList { days: this.state.allSkiDays }
+      else
+        AddDayForm null
+```
+
+Import `NavLink` instead of `Link` to use `activeClassName` inside `Menu.coffee`.
+```coffeescript
+import {NavLink} from 'react-router-dom'
+```
+
+src/components/Menu.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {nav} from 'react-dom-factories'
+import {NavLink} from 'react-router-dom'
+import {FaHome, FaCalendarPlus, FaTable} from 'react-icons/fa'
+
+export Menu = ->
+  nav { className: 'menu' },
+    ele NavLink, { to: '/', activeClassName: 'selected' },
+      FaHome null
+    ele NavLink, { to: '/add-day', activeClassName: 'selected' },
+      FaCalendarPlus null
+    ele NavLink, { to: '/list-days', activeClassName: 'selected' },
+      FaTable null
+```
+
+![Navigating with the link component](/images/05-03-navigating-with-the-link-component.gif)

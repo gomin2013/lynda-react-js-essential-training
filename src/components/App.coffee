@@ -1,5 +1,7 @@
-import React, {Component, createElement as ele} from 'react'
+import React, {Component} from 'react'
 import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
 import {SkiDayList} from './SkiDayList.coffee'
 import {SkiDayCount} from './SkiDayCount.coffee'
 
@@ -35,11 +37,14 @@ export class App extends Component
 
   render: ->
     div { className: 'app' },
+      Menu null
       if this.props.location.pathname == '/'
-        ele SkiDayCount, {
+        SkiDayCount {
           total: this.countDays()
           powder: this.countDays('powder')
           backcountry: this.countDays('backcountry')
         }
+      else if this.props.location.pathname == '/list-days'
+        SkiDayList { days: this.state.allSkiDays }
       else
-        ele SkiDayList, { days: this.state.allSkiDays }
+        AddDayForm null
