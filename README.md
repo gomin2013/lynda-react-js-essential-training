@@ -2916,3 +2916,198 @@ SkiDayList.propTypes =
 ```
 
 ![Using route parameters](/images/05-04-using-route-parameters.gif)
+
+### Nesting routes
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── package-lock.json
+  ├── package.json
+  ├── postcss.config.js
+  ├── src
+  │   ├── index.coffee
+  │   ├── routes.coffee           (Create new file)
+  │   ├── components
+  │   │   ├── index.coffee          (Create new file)
+  │   │   └── ui                    (Create new directory)
+  │   │       ├── MainMenu.coffee     (Create new file)
+  │   │       ├── Home.coffee         (Create new file)
+  │   │       ├── About.coffee        (Create new file)
+  │   │       └── MemberList.coffee   (Create new file)
+  │   └── stylesheets
+  │       └── style.scss            (Create new file)
+  └── webpack.config.js
+```
+
+src/index.coffee
+```coffeescript
+import {render} from 'react-dom'
+import {Routes} from './routes.coffee'
+
+render Routes, document.getElementById('react-container')
+```
+
+src/routes.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {HashRouter, Switch, Route} from 'react-router-dom'
+import {Home} from './components/ui/Home.coffee'
+import {Index, Whoops404} from './components/index.coffee'
+import './stylesheets/style.scss'
+
+export Routes =
+  ele HashRouter, null,
+      ele Switch, null,
+        ele Route, { path: '/', exact: true, component: Home }
+        ele Route, { path: '/(about|members)', component: Index }
+        ele Route, { component: Whoops404 }
+```
+
+src/components/ui/MainMenu.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {nav} from 'react-dom-factories'
+import {NavLink} from 'react-router-dom'
+import {FaHome} from 'react-icons/fa'
+
+export MainMenu = ->
+  nav null,
+    ele NavLink, { to: '/' },
+      FaHome null
+    ele NavLink, { to: '/about', activeStyle: {
+      backgroundColor: "white",
+      color: "slategray"
+    } }, 'About'
+    ele NavLink, { to: '/members', activeStyle: {
+      backgroundColor: "white",
+      color: "slategray"
+    } }, 'Members'
+```
+
+![Main Menu](/images/05-05-main-menu.png)
+
+src/components/ui/Home.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {div, h1} from 'react-dom-factories'
+import {MainMenu} from './MainMenu.coffee'
+
+export Home = ->
+  div { className: 'home' },
+    ele MainMenu, { className: 'main-menu' }
+    div { id: 'homebox' },
+      h1 null, 'Rock Appreciation Society'
+```
+
+![Home](/images/05-05-home.png)
+
+src/components/index.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {div, h1, p} from 'react-dom-factories'
+import {Switch, Route} from 'react-router-dom'
+import {MainMenu} from './ui/MainMenu.coffee'
+import {About} from './ui/About.coffee'
+import {MemberList} from './ui/MemberList.coffee'
+
+export Index = ->
+  div { className: 'page' },
+    ele MainMenu, { className: 'main-menu' }
+    ele Switch, null,
+      ele Route, { path: '/about', component: About }
+      ele Route, { path: '/members', component: MemberList }
+
+export Whoops404 = ({location}) ->
+  div null,
+    h1 null, 'Whoops, resource not found'
+    p null, "Could not find #{location.pathname}"
+```
+
+src/components/ui/About.coffee
+```coffeescript
+import {div, h1, p} from 'react-dom-factories'
+
+export About = ->
+  div { className: 'about' },
+    h1 null, 'About'
+    p null, '''
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque iaculis erat non dignissim malesuada.
+      Mauris in elit quis lectus auctor pharetra. Cras fermentum leo est, a aliquet ligula cursus a. Ut vitae leo
+      mollis, scelerisque enim nec, euismod turpis. Praesent ut turpis non justo lacinia varius sed eu mauris.
+      Nullam hendrerit aliquet sapien varius faucibus. Nulla varius magna ex, nec ornare massa interdum sed.
+      Aliquam consequat lacus nec felis scelerisque, tempus maximus sapien venenatis. Sed quis ornare purus.
+      Vestibulum tempor id diam vel ultrices. Aenean neque nibh, tempor in tincidunt nec, ullamcorper in erat.
+      Aliquam erat volutpat. Aenean vitae sapien at nibh lacinia accumsan maximus sit amet risus.
+      '''
+    p null, '''
+      Vestibulum laoreet condimentum sem quis convallis. Nullam quis tortor mauris. Pellentesque orci sapien,
+      fermentum non porta a, lobortis vitae mi. Integer quis enim at nunc commodo egestas. Maecenas et tortor ut
+      diam consectetur malesuada. Curabitur posuere, diam at pulvinar cursus, diam diam imperdiet risus, vel
+      ullamcorper sapien lectus vitae turpis. Sed posuere lectus at dictum ultrices. Nulla in congue ipsum.
+      Praesent commodo venenatis arcu non lacinia. Integer placerat odio eget metus posuere, id placerat orci
+      tristique. Nulla nec lorem sit amet diam luctus tempor ac sit amet mi. Vivamus tortor tortor, ornare a risus
+      eget, efficitur vestibulum augue. Nunc vulputate faucibus purus, eget convallis urna porta eget. In faucibus
+      tristique mauris eu gravida.
+      '''
+    p null, '''
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque iaculis erat non dignissim malesuada.
+      Mauris in elit quis lectus auctor pharetra. Cras fermentum leo est, a aliquet ligula cursus a. Ut vitae leo
+      mollis, scelerisque enim nec, euismod turpis. Praesent ut turpis non justo lacinia varius sed eu mauris.
+      Nullam hendrerit aliquet sapien varius faucibus. Nulla varius magna ex, nec ornare massa interdum sed.
+      Aliquam consequat lacus nec felis scelerisque, tempus maximus sapien venenatis. Sed quis ornare purus.
+      Vestibulum tempor id diam vel ultrices. Aenean neque nibh, tempor in tincidunt nec, ullamcorper in erat.
+      Aliquam erat volutpat. Aenean vitae sapien at nibh lacinia accumsan maximus sit amet risus.
+      '''
+    p null, '''
+      Vestibulum laoreet condimentum sem quis convallis. Nullam quis tortor mauris. Pellentesque orci sapien,
+      fermentum non porta a, lobortis vitae mi. Integer quis enim at nunc commodo egestas. Maecenas et tortor ut
+      diam consectetur malesuada. Curabitur posuere, diam at pulvinar cursus, diam diam imperdiet risus, vel
+      ullamcorper sapien lectus vitae turpis. Sed posuere lectus at dictum ultrices. Nulla in congue ipsum.
+      Praesent commodo venenatis arcu non lacinia. Integer placerat odio eget metus posuere, id placerat orci
+      tristique. Nulla nec lorem sit amet diam luctus tempor ac sit amet mi. Vivamus tortor tortor, ornare a risus
+      eget, efficitur vestibulum augue. Nunc vulputate faucibus purus, eget convallis urna porta eget. In faucibus
+      tristique mauris eu gravida.
+      '''
+```
+
+![About](/images/05-05-about.png)
+
+`Optional` Use `'''` or `"""` to contain `CoffeeScript multiline strings`. 
+```coffeescript
+'''
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque iaculis erat non dignissim malesuada.
+Mauris in elit quis lectus auctor pharetra. Cras fermentum leo est, a aliquet ligula cursus a. Ut vitae leo
+mollis, scelerisque enim nec, euismod turpis. Praesent ut turpis non justo lacinia varius sed eu mauris.
+'''
+
+"""
+Vestibulum laoreet condimentum sem quis convallis. Nullam quis tortor mauris. Pellentesque orci sapien,
+fermentum non porta a, lobortis vitae mi. Integer quis enim at nunc commodo egestas. Maecenas et tortor ut
+diam consectetur malesuada. Curabitur posuere, diam at pulvinar cursus, diam diam imperdiet risus, vel
+ullamcorper sapien lectus vitae turpis. Sed posuere lectus at dictum ultrices. Nulla in congue ipsum.
+"""
+```
+
+More about [`CoffeeScript strings`](https://coffeescript.org/#strings).
+
+[![About](/images/05-05-coffee-script-strings.png)](https://coffeescript.org/#strings)
+
+src/components/ui/MemberList.coffee
+```coffeescript
+import {div, h1} from 'react-dom-factories'
+
+export MemberList = ->
+  div { className: 'member-list' },
+    h1 null, 'Society Members'
+```
+
+![Members](/images/05-05-members.png)
+
+Please find [`style.scss`](../18c58ea9d2e8478253de311c51afbbe9ea8c284f/src/stylesheets/style.scss)
+
+![Using route parameters](/images/05-05-using-route-parameters.gif)
