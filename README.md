@@ -3111,3 +3111,267 @@ export MemberList = ->
 Please find [`style.scss`](../18c58ea9d2e8478253de311c51afbbe9ea8c284f/src/stylesheets/style.scss)
 
 ![Using route parameters](/images/05-05-using-route-parameters.gif)
+
+## 06 Forms and Refs
+### Creating a form component
+
+Create new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── package-lock.json
+  ├── package.json
+  ├── postcss.config.js
+  ├── src
+  │   ├── index.coffee
+  │   ├── components
+  │   │   ├── AddDayForm.coffee     (Create new file)
+  │   │   ├── App.coffee            (Create new file)
+  │   │   ├── Menu.coffee           (Create new file)
+  │   │   ├── SkiDayCount.coffee    (Create new file)
+  │   │   ├── SkiDayList.coffee     (Create new file)
+  │   │   ├── SkiDayRow.coffee      (Create new file)
+  │   │   └── Whoops404.coffee      (Create new file)
+  │   └── stylesheets
+  │       ├── globals.scss          (Create new file)
+  │       ├── index.scss            (Create new file)
+  │       └── ui.scss               (Create new file)
+  └── webpack.config.js
+```
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/list-days/:filter(powder|backcountry)', component: App }
+      ele Route, { path: '/add-day', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+
+src/components/AddDayForm.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, form, label, input} from 'react-dom-factories'
+
+export AddDayForm = ({resort = 'Kirkwood', date = '2017-02-12', powder = true, backcountry = false}) ->
+  form { className: 'add-day-form' },
+    label { htmlFor: 'resort' }, 'Resort Name'
+    input { id: 'resort', type: 'text', defaultValue: resort, required: true }
+
+    label { htmlFor: 'date' }, 'Date'
+    input { id: 'date', type: 'date', defaultValue: date, required: true }
+
+    div null,
+      input { id: 'powder', type: 'checkbox', defaultChecked: powder }
+      label { htmlFor: 'powder' }, 'Powder Day'
+
+    div null,
+      input { id: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
+      label { htmlFor: 'backcountry' }, 'Backcountry Day'
+
+AddDayForm.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.string.isRequired
+  powder: PropTypes.bool.isRequired
+  backcountry: PropTypes.bool.isRequired
+```
+
+![AddDayForm](/images/06-01-add-day-form.png)
+
+src/components/App.coffee
+```coffeescript
+import {Component} from 'react'
+import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      Menu null
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/add-day'
+        AddDayForm {}
+      else
+        SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }
+```
+
+src/components/Menu.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {nav} from 'react-dom-factories'
+import {NavLink} from 'react-router-dom'
+import {FaHome, FaCalendarPlus, FaTable} from 'react-icons/fa'
+
+export Menu = ->
+  nav { className: 'menu' },
+    ele NavLink, { to: '/', activeClassName: 'selected' },
+      FaHome null
+    ele NavLink, { to: '/add-day', activeClassName: 'selected' },
+      FaCalendarPlus null
+    ele NavLink, { to: '/list-days', activeClassName: 'selected' },
+      FaTable null
+```
+
+src/components/SkiDayCount.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, span} from 'react-dom-factories'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+import '../stylesheets/ui.scss'
+
+percentToDecimal = (decimal) -> ((decimal * 100) + '%')
+calcGoalProgress = (total, goal) -> percentToDecimal(total / goal)
+
+export SkiDayCount = ({total=70, powder=20, backcountry=10, goal=100}) ->
+  div { className: 'ski-day-count' },
+    div { className: 'total-days' },
+      span null, total
+      FaRegCalendarAlt null
+      span null, 'days'
+    div { className: 'powder-days' },
+      span null, powder
+      TiWeatherSnow null
+      span null, 'days'
+    div { className: 'backcountry-days' },
+      span null, backcountry
+      MdTerrain null
+      span null, 'days'
+    div null,
+      span null, calcGoalProgress(total, goal)
+
+SkiDayCount.propTypes =
+  total: PropTypes.number
+  powder: PropTypes.number
+  backcountry: PropTypes.number
+  goal: PropTypes.number
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {table, thead, tbody, tr, th, td} from 'react-dom-factories'
+import {Link} from 'react-router-dom'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days, filter}) ->
+
+  filteredDays = if !filter then days else days.filter (day) -> day[filter]
+
+  table null,
+    thead null,
+      tr null,
+        th null, 'Date'
+        th null, 'Resort'
+        th null, 'Powder'
+        th null, 'Backcountry'
+      tr null,
+        td { colSpan: 4 },
+          ele Link, { to: '/list-days' }, 'All Days'
+          ele Link, { to: '/list-days/powder' }, 'Powder Days'
+          ele Link, { to: '/list-days/backcountry' }, 'Backcountry Days'
+    tbody null,
+      filteredDays.map (day, i) ->
+        day.key = i
+        ele SkiDayRow, day
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+src/components/SkiDayRow.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {tr, td} from 'react-dom-factories'
+import {TiWeatherSnow} from 'react-icons/ti'
+import {MdTerrain} from 'react-icons/md'
+
+export SkiDayRow = ({resort, date, powder, backcountry}) ->
+  tr null,
+    td null,
+      "#{date.getMonth() + 1}/#{date.getDate()}/#{date.getFullYear()}"
+    td null,
+      resort
+    td null,
+      if powder then TiWeatherSnow null else null
+    td null,
+      if backcountry then MdTerrain null else null
+
+SkiDayRow.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.instanceOf(Date).isRequired
+  powder: PropTypes.bool
+  backcountry: PropTypes.bool
+```
+
+src/components/Whoops404.coffee
+```coffeescript
+import {div, h1} from 'react-dom-factories'
+
+export Whoops404 = ->
+  div null,
+    h1 null, 'Whoops, route not found'
+```
+
+Please find [`globals.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/globals.scss), [`index.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/index.scss) and [`ui.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/ui.scss)
+
+![Creating a form component](/images/06-01-creating-a-form-component.gif)
