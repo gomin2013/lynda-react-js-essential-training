@@ -3375,3 +3375,124 @@ export Whoops404 = ->
 Please find [`globals.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/globals.scss), [`index.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/index.scss) and [`ui.scss`](../f100947afa51af3be6db3a034981ebc3a9af46fe/src/stylesheets/ui.scss)
 
 ![Creating a form component](/images/06-01-creating-a-form-component.gif)
+
+### Using refs in class components
+
+Import `createElement` as `ele` inside `App.coffee`
+```coffeescript
+import {Component, createElement as ele} from 'react'
+```
+
+Add the `AddDayForm` component as an element inside `App.coffee`.
+```coffeescript
+        ele AddDayForm, null
+```
+
+src/components/App.coffee
+```coffeescript
+import {Component, createElement as ele} from 'react'
+import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: new Date('1/2/2016')
+          powder: true
+          backcountry: false
+        }
+        {
+          resort: 'Kirkwood'
+          date: new Date('3/28/2016')
+          powder: false
+          backcountry: false
+        }
+        {
+          resort: 'Mt. Tallac'
+          date: new Date('4/2/2016')
+          powder: false
+          backcountry: true
+        }
+      ]
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      Menu null
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/add-day'
+        ele AddDayForm, null
+      else
+        SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }
+```
+
+src/components/AddDayForm.coffee
+```coffeescript
+import {Component} from 'react'
+import PropTypes from 'prop-types'
+import {div, form, label, input, button} from 'react-dom-factories'
+
+export class AddDayForm extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.submit = this.submit.bind(this)
+
+  submit: ->
+    {resort, date, powder, backcountry} = this.refs
+
+    console.log('resort', resort.value)
+    console.log('date', date.value)
+    console.log('powder', powder.checked)
+    console.log('backcountry', backcountry.checked)
+
+  render: ->
+    {resort, date, powder, backcountry} = this.props
+
+    form { onSubmit: this.submit, className: 'add-day-form' },
+      label { htmlFor: 'resort' }, 'Resort Name'
+      input { id: 'resort', ref: 'resort', type: 'text', defaultValue: resort, required: true}
+
+      label { htmlFor: 'date' }, 'Date'
+      input { id: 'date', ref: 'date', type: 'date', defaultValue: date, required: true }
+
+      div null,
+        input { id: 'powder', ref: 'powder', type: 'checkbox', defaultChecked: powder }
+        label { htmlFor: 'powder' }, 'Powder Day'
+
+      div null,
+        input { id: 'backcountry', ref: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
+        label { htmlFor: 'backcountry' }, 'Backcountry Day'
+
+      button null, 'Add Day'
+
+AddDayForm.defaultProps =
+  resort: 'Kirkwood'
+  date: '2017-02-12'
+  powder: true
+  backcountry: false
+
+AddDayForm.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.string.isRequired
+  powder: PropTypes.bool.isRequired
+  backcountry: PropTypes.bool.isRequired
+```
+
+![Using refs in class components](/images/06-02-using-refs-in-class-components.gif)

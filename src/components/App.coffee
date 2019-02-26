@@ -1,4 +1,4 @@
-import {Component} from 'react'
+import {Component, createElement as ele} from 'react'
 import {div} from 'react-dom-factories'
 import {AddDayForm} from './AddDayForm.coffee'
 import {Menu} from './Menu.coffee'
@@ -45,6 +45,6 @@ export class App extends Component
           backcountry: this.countDays('backcountry')
         }
       else if this.props.location.pathname == '/add-day'
-        AddDayForm {}
+        ele AddDayForm, null
       else
         SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }
