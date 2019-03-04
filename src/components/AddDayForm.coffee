@@ -1,5 +1,33 @@
+import {Component, createElement as ele} from 'react'
 import PropTypes from 'prop-types'
-import {div, form, label, input, button} from 'react-dom-factories'
+import {div, form, label, input, button, datalist, option} from 'react-dom-factories'
+
+tahoeResorts = [
+  "Alpine Meadows"
+  "Boreal"
+  "Diamond Peak"
+  "Donner Ski Ranch"
+  "Heavenly"
+  "Homewood"
+  "Kirkwood"
+  "Mt. Rose"
+  "Northstar"
+  "Squaw Valley"
+  "Sugar Bowl"
+]
+
+export class Autocomplete extends Component
+  get: ->
+    this.refs.inputResort.value
+
+  set: (inputValue) ->
+    this.refs.inputResort.value = inputValue
+
+  render: ->
+    div null,
+      input { id: 'resort', type: 'text', list: 'tahoe-resorts', defaultValue: this.refs.inputResort, required: true }
+      datalist { id: 'tahoe-resorts' },
+        this.props.options.map((opt, i) -> option { key: i }, opt)
 
 export AddDayForm = ({resort, date, powder, backcountry, onNewDay}) ->
 
@@ -20,7 +48,7 @@ export AddDayForm = ({resort, date, powder, backcountry, onNewDay}) ->
 
   form { onSubmit: submit, className: 'add-day-form' },
     label { htmlFor: 'resort' }, 'Resort Name'
-    input { id: 'resort', type: 'text', defaultValue: resort, required: true}
+    ele Autocomplete, { options: tahoeResorts }
 
     label { htmlFor: 'date' }, 'Date'
     input { id: 'date', type: 'date', defaultValue: date, required: true }

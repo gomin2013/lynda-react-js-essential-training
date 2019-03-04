@@ -4,6 +4,7 @@ import {HashRouter, Route, Switch} from 'react-router-dom'
 import {App} from './components/App.coffee'
 import {Whoops404} from './components/Whoops404.coffee'
 import './stylesheets/ui.scss'
+import './stylesheets/index.scss'
 
 routes =
   ele HashRouter, null,

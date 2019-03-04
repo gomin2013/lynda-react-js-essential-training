@@ -3723,3 +3723,224 @@ SkiDayList.propTypes =
 ```
 
 ![Two-way function binding](/images/06-04-two-way-function-binding.gif)
+
+### Adding an autocomplete component
+
+Add a new directory and a new image.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   ├── bundle.js
+  │   │   └── img                (Create a new directory)
+  │   │       └── rowdy.jpg        (Add a new image)
+  │   └── index.html
+  ├── package-lock.json
+  ├── package.json
+  ├── postcss.config.js
+  ├── src
+  │   ├── components
+  │   │   ├── AddDayForm.coffee
+  │   │   ├── App.coffee
+  │   │   ├── Menu.coffee
+  │   │   ├── SkiDayCount.coffee
+  │   │   ├── SkiDayList.coffee
+  │   │   ├── SkiDayRow.coffee
+  │   │   └── Whoops404.coffee
+  │   ├── index.coffee
+  │   └── stylesheets
+  │       ├── globals.scss
+  │       ├── index.scss
+  │       └── ui.scss
+  └── webpack.config.js
+```
+
+Please find [`rowdy.jpg`](../34ab79dff472f510335134f55524dea054762d0a/dist/assets/img/rowdy.jpg)
+
+Add import style inside `index.coffee`
+```coffeescript
+import './stylesheets/index.scss'
+```
+
+Please find [`index.scss`](../34ab79dff472f510335134f55524dea054762d0a/src/stylesheets/index.scss)
+
+src/index.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {HashRouter, Route, Switch} from 'react-router-dom'
+import {App} from './components/App.coffee'
+import {Whoops404} from './components/Whoops404.coffee'
+import './stylesheets/ui.scss'
+import './stylesheets/index.scss'
+
+routes =
+  ele HashRouter, null,
+    ele Switch, null,
+      ele Route, { path: '/', exact: true, component: App }
+      ele Route, { path: '/list-days', exact: true, component: App }
+      ele Route, { path: '/list-days/:filter(powder|backcountry)', component: App }
+      ele Route, { path: '/add-day', exact: true, component: App }
+      ele Route, { component: Whoops404 }
+
+render routes, document.getElementById('react-container')
+```
+
+Add resort name list as an array inside `AddDayForm.coffee`
+```coffeescript
+tahoeResorts = [
+  "Alpine Meadows"
+  "Boreal"
+  "Diamond Peak"
+  "Donner Ski Ranch"
+  "Heavenly"
+  "Homewood"
+  "Kirkwood"
+  "Mt. Rose"
+  "Northstar"
+  "Squaw Valley"
+  "Sugar Bowl"
+]
+```
+
+Add `Autocomplete` as a class inside `AddDayForm.coffee`
+```coffeescript
+export class Autocomplete extends Component
+  get: ->
+    this.refs.inputResort.value
+
+  set: (inputValue) ->
+    this.refs.inputResort.value = inputValue
+
+  render: ->
+    div null,
+      input { id: 'resort', type: 'text', list: 'tahoe-resorts', defaultValue: this.refs.inputResort, required: true }
+      datalist { id: 'tahoe-resorts' },
+        this.props.options.map((opt, i) -> option { key: i }, opt)
+```
+
+Add the `Autocomplete` component as an element inside `AddDayForm.coffee`
+```coffeescript
+    ele Autocomplete, { options: tahoeResorts }
+```
+
+src/components/AddDayForm.coffee
+```coffeescript
+import {Component, createElement as ele} from 'react'
+import PropTypes from 'prop-types'
+import {div, form, label, input, button, datalist, option} from 'react-dom-factories'
+
+tahoeResorts = [
+  "Alpine Meadows"
+  "Boreal"
+  "Diamond Peak"
+  "Donner Ski Ranch"
+  "Heavenly"
+  "Homewood"
+  "Kirkwood"
+  "Mt. Rose"
+  "Northstar"
+  "Squaw Valley"
+  "Sugar Bowl"
+]
+
+export class Autocomplete extends Component
+  get: ->
+    this.refs.inputResort.value
+
+  set: (inputValue) ->
+    this.refs.inputResort.value = inputValue
+
+  render: ->
+    div null,
+      input { id: 'resort', type: 'text', list: 'tahoe-resorts', defaultValue: this.refs.inputResort, required: true }
+      datalist { id: 'tahoe-resorts' },
+        this.props.options.map((opt, i) -> option { key: i }, opt)
+
+export AddDayForm = ({resort, date, powder, backcountry, onNewDay}) ->
+
+  submit = (e) ->
+    {resort, date, powder, backcountry} = e.target.elements
+
+    onNewDay({
+      resort: resort.value
+      date: date.value
+      powder: powder.checked
+      backcountry: backcountry.checked
+    })
+
+    resort.value = ''
+    date.value = ''
+    powder.checked = false
+    backcountry.checked = false
+
+  form { onSubmit: submit, className: 'add-day-form' },
+    label { htmlFor: 'resort' }, 'Resort Name'
+    ele Autocomplete, { options: tahoeResorts }
+
+    label { htmlFor: 'date' }, 'Date'
+    input { id: 'date', type: 'date', defaultValue: date, required: true }
+
+    div null,
+      input { id: 'powder', type: 'checkbox', defaultChecked: powder }
+      label { htmlFor: 'powder' }, 'Powder Day'
+
+    div null,
+      input { id: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
+      label { htmlFor: 'backcountry' }, 'Backcountry Day'
+
+    button null, 'Add Day'
+
+AddDayForm.defaultProps =
+  resort: 'Kirkwood'
+  date: '2017-02-12'
+  powder: true
+  backcountry: false
+
+AddDayForm.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.string.isRequired
+  powder: PropTypes.bool.isRequired
+  backcountry: PropTypes.bool.isRequired
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {div, table, thead, tbody, tr, th, td} from 'react-dom-factories'
+import {Link} from 'react-router-dom'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days, filter}) ->
+
+  filteredDays = if !filter then days else days.filter (day) -> day[filter]
+
+  div { className: 'ski-day-list' },
+    table null,
+      thead null,
+        tr null,
+          th null, 'Date'
+          th null, 'Resort'
+          th null, 'Powder'
+          th null, 'Backcountry'
+        tr null,
+          td { colSpan: 4 },
+            ele Link, { to: '/list-days' }, 'All Days'
+            ele Link, { to: '/list-days/powder' }, 'Powder Days'
+            ele Link, { to: '/list-days/backcountry' }, 'Backcountry Days'
+      tbody null,
+        filteredDays.map (day, i) ->
+          day.key = i
+          ele SkiDayRow, day
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+![Adding an autocomplete component](/images/06-05-adding-an-autocomplete-component.gif)
