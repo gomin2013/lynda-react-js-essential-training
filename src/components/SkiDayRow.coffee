@@ -6,7 +6,7 @@ import {MdTerrain} from 'react-icons/md'
 export SkiDayRow = ({resort, date, powder, backcountry}) ->
   tr null,
     td null,
-      "#{date.getMonth() + 1}/#{date.getDate()}/#{date.getFullYear()}"
+      date
     td null,
       resort
     td null,
@@ -16,6 +16,6 @@ export SkiDayRow = ({resort, date, powder, backcountry}) ->
 
 SkiDayRow.propTypes =
   resort: PropTypes.string.isRequired
-  date: PropTypes.instanceOf(Date).isRequired
+  date: PropTypes.string.isRequired
   powder: PropTypes.bool
   backcountry: PropTypes.bool

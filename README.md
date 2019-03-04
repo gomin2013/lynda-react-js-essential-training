@@ -3545,3 +3545,181 @@ AddDayForm.propTypes =
 ```
 
 ![Using refs in stateless components](/images/06-03-using-refs-in-stateless-components.gif)
+
+### Two-way function binding
+
+Bind `addDay` method inside component’s constructor of `App.coffee`
+```coffeescript
+    this.addDay = this.addDay.bind(this)
+```
+
+Create `addDay` function to add `newDay` record to `allSkiDays` inside `App.coffee`
+```coffeescript
+  addDay: (newDay) ->
+    this.state.allSkiDays.push newDay
+    this.setState(this.state.allSkiDays)
+```
+
+Add `AddDayForm` element to bind `addDay` method as `onNewDay` attribute inside `App.coffee`
+```coffeescript
+        ele AddDayForm, { onNewDay: this.addDay }
+```
+
+src/components/App.coffee
+```coffeescript
+import {Component, createElement as ele} from 'react'
+import {div} from 'react-dom-factories'
+import {AddDayForm} from './AddDayForm.coffee'
+import {Menu} from './Menu.coffee'
+import {SkiDayList} from './SkiDayList.coffee'
+import {SkiDayCount} from './SkiDayCount.coffee'
+
+export class App extends Component
+
+  constructor: (props) ->
+    super(props)
+    this.state =
+      allSkiDays: [
+        {
+          resort: 'Squaw Valley'
+          date: '2016-01-02'
+          powder: true
+          backcountry: false
+        }
+      ]
+    this.addDay = this.addDay.bind(this)
+
+  addDay: (newDay) ->
+    this.state.allSkiDays.push newDay
+    this.setState(this.state.allSkiDays)
+
+  countDays: (filter) ->
+    this.state.allSkiDays
+      .filter((day) -> if filter then day[filter] else day).length
+
+  render: ->
+    div { className: 'app' },
+      Menu null
+      if this.props.location.pathname == '/'
+        SkiDayCount {
+          total: this.countDays()
+          powder: this.countDays('powder')
+          backcountry: this.countDays('backcountry')
+        }
+      else if this.props.location.pathname == '/add-day'
+        ele AddDayForm, { onNewDay: this.addDay }
+      else
+        SkiDayList { days: this.state.allSkiDays, filter: this.props.match.params.filter }
+```
+
+Assign attributes to `onNewDay` function inside `AddDayForm.coffee`
+```coffeescript
+    {resort, date, powder, backcountry} = e.target.elements
+
+    onNewDay({
+      resort: resort.value
+      date: date.value
+      powder: powder.checked
+      backcountry: backcountry.checked
+    })
+```
+
+To reset attributes inside `AddDayForm.coffee`
+```coffeescript
+    resort.value = ''
+    date.value = ''
+    powder.checked = false
+    backcountry.checked = false
+```
+
+src/components/AddDayForm.coffee
+```coffeescript
+import PropTypes from 'prop-types'
+import {div, form, label, input, button} from 'react-dom-factories'
+
+export AddDayForm = ({resort, date, powder, backcountry, onNewDay}) ->
+
+  submit = (e) ->
+    {resort, date, powder, backcountry} = e.target.elements
+
+    onNewDay({
+      resort: resort.value
+      date: date.value
+      powder: powder.checked
+      backcountry: backcountry.checked
+    })
+
+    resort.value = ''
+    date.value = ''
+    powder.checked = false
+    backcountry.checked = false
+
+  form { onSubmit: submit, className: 'add-day-form' },
+    label { htmlFor: 'resort' }, 'Resort Name'
+    input { id: 'resort', type: 'text', defaultValue: resort, required: true}
+
+    label { htmlFor: 'date' }, 'Date'
+    input { id: 'date', type: 'date', defaultValue: date, required: true }
+
+    div null,
+      input { id: 'powder', type: 'checkbox', defaultChecked: powder }
+      label { htmlFor: 'powder' }, 'Powder Day'
+
+    div null,
+      input { id: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
+      label { htmlFor: 'backcountry' }, 'Backcountry Day'
+
+    button null, 'Add Day'
+
+AddDayForm.defaultProps =
+  resort: 'Kirkwood'
+  date: '2017-02-12'
+  powder: true
+  backcountry: false
+
+AddDayForm.propTypes =
+  resort: PropTypes.string.isRequired
+  date: PropTypes.string.isRequired
+  powder: PropTypes.bool.isRequired
+  backcountry: PropTypes.bool.isRequired
+```
+
+src/components/SkiDayList.coffee
+```coffeescript
+import React, {createElement as ele} from 'react'
+import {table, thead, tbody, tr, th, td} from 'react-dom-factories'
+import {Link} from 'react-router-dom'
+import {SkiDayRow} from './SkiDayRow.coffee'
+
+export SkiDayList = ({days, filter}) ->
+
+  filteredDays = if !filter then days else days.filter (day) -> day[filter]
+
+  table null,
+    thead null,
+      tr null,
+        th null, 'Date'
+        th null, 'Resort'
+        th null, 'Powder'
+        th null, 'Backcountry'
+      tr null,
+        td { colSpan: 4 },
+          ele Link, { to: '/list-days' }, 'All Days'
+          ele Link, { to: '/list-days/powder' }, 'Powder Days'
+          ele Link, { to: '/list-days/backcountry' }, 'Backcountry Days'
+    tbody null,
+      filteredDays.map (day, i) ->
+        day.key = i
+        ele SkiDayRow, day
+
+SkiDayList.propTypes =
+  days: (props) ->
+    if !Array.isArray(props.days)
+      new Error('SkiDayList should be an array')
+    else if !props.days.length
+      new Error('SkiDayList must have at least one record')
+    else
+      null
+```
+
+![Two-way function binding](/images/06-04-two-way-function-binding.gif)

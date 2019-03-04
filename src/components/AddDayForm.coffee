@@ -1,15 +1,22 @@
 import PropTypes from 'prop-types'
 import {div, form, label, input, button} from 'react-dom-factories'
 
-export AddDayForm = ({resort, date, powder, backcountry}) ->
+export AddDayForm = ({resort, date, powder, backcountry, onNewDay}) ->
 
   submit = (e) ->
     {resort, date, powder, backcountry} = e.target.elements
 
-    console.log('resort', resort.value)
-    console.log('date', date.value)
-    console.log('powder', powder.checked)
-    console.log('backcountry', backcountry.checked)
+    onNewDay({
+      resort: resort.value
+      date: date.value
+      powder: powder.checked
+      backcountry: backcountry.checked
+    })
+
+    resort.value = ''
+    date.value = ''
+    powder.checked = false
+    backcountry.checked = false
 
   form { onSubmit: submit, className: 'add-day-form' },
     label { htmlFor: 'resort' }, 'Resort Name'
