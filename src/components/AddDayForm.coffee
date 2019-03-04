@@ -1,40 +1,32 @@
-import {Component} from 'react'
 import PropTypes from 'prop-types'
 import {div, form, label, input, button} from 'react-dom-factories'
 
-export class AddDayForm extends Component
+export AddDayForm = ({resort, date, powder, backcountry}) ->
 
-  constructor: (props) ->
-    super(props)
-    this.submit = this.submit.bind(this)
-
-  submit: ->
-    {resort, date, powder, backcountry} = this.refs
+  submit = (e) ->
+    {resort, date, powder, backcountry} = e.target.elements
 
     console.log('resort', resort.value)
     console.log('date', date.value)
     console.log('powder', powder.checked)
     console.log('backcountry', backcountry.checked)
 
-  render: ->
-    {resort, date, powder, backcountry} = this.props
+  form { onSubmit: submit, className: 'add-day-form' },
+    label { htmlFor: 'resort' }, 'Resort Name'
+    input { id: 'resort', type: 'text', defaultValue: resort, required: true}
 
-    form { onSubmit: this.submit, className: 'add-day-form' },
-      label { htmlFor: 'resort' }, 'Resort Name'
-      input { id: 'resort', ref: 'resort', type: 'text', defaultValue: resort, required: true}
+    label { htmlFor: 'date' }, 'Date'
+    input { id: 'date', type: 'date', defaultValue: date, required: true }
 
-      label { htmlFor: 'date' }, 'Date'
-      input { id: 'date', ref: 'date', type: 'date', defaultValue: date, required: true }
+    div null,
+      input { id: 'powder', type: 'checkbox', defaultChecked: powder }
+      label { htmlFor: 'powder' }, 'Powder Day'
 
-      div null,
-        input { id: 'powder', ref: 'powder', type: 'checkbox', defaultChecked: powder }
-        label { htmlFor: 'powder' }, 'Powder Day'
+    div null,
+      input { id: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
+      label { htmlFor: 'backcountry' }, 'Backcountry Day'
 
-      div null,
-        input { id: 'backcountry', ref: 'backcountry', type: 'checkbox', defaultChecked: backcountry }
-        label { htmlFor: 'backcountry' }, 'Backcountry Day'
-
-      button null, 'Add Day'
+    button null, 'Add Day'
 
 AddDayForm.defaultProps =
   resort: 'Kirkwood'
