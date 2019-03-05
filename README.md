@@ -3944,3 +3944,76 @@ SkiDayList.propTypes =
 ```
 
 ![Adding an autocomplete component](/images/06-05-adding-an-autocomplete-component.gif)
+
+## 07 The Component Lifecycle
+### Challenge Building the Member component
+
+Add a new directory and new files.
+```
+▶ react-js-essential-training
+  ├── dist
+  │   ├── assets
+  │   │   └── bundle.js
+  │   └── index.html
+  ├── package-lock.json
+  ├── package.json
+  ├── postcss.config.js
+  ├── src
+  │   ├── components
+  │   │   └── ui                    (Create new directory)
+  │   │       └── Member.coffee       (Create new file)
+  │   ├── index.coffee
+  │   └── stylesheets
+  │       └── style.scss            (Create new file)
+  └── webpack.config.js
+```
+
+Add import style inside `index.coffee`
+```coffeescript
+import './stylesheets/style.scss'
+```
+
+src/index.coffee
+```coffeescript
+import {createElement as ele} from 'react'
+import {render} from 'react-dom'
+import {Member} from './components/ui/Member.coffee'
+import './stylesheets/style.scss'
+
+member =
+  ele Member, {
+    admin: true,
+    name: 'Edna Welch',
+    email: 'edna.welch88@example.com',
+    thumbnail: 'https://randomuser.me/api/portraits/women/90.jpg',
+    makeAdmin: (email) -> console.log(email)
+  }
+
+render member, document.getElementById('react-container')
+```
+
+Please find [`style.scss`](../ae36dd961760db7561e1fe74c9c32249f5739a31/src/stylesheets/style.scss)
+
+Assign the `makeAdmin` function as the `onClick` attribute and pass `email` as a bind parameter inside `Member.coffee`
+```coffeescript
+    a { onClick: makeAdmin.bind(this, email) },
+```
+
+src/components/ui/Member.coffee
+```coffeescript
+import {div, h1, p, a, img} from 'react-dom-factories'
+import {FaShieldAlt} from 'react-icons/fa'
+
+export Member = ({name, thumbnail, email, admin, makeAdmin}) ->
+  div { className: 'member' },
+    h1 null,
+      name
+      if admin then FaShieldAlt null else null
+    a { onClick: makeAdmin.bind(this, email) },
+      'Make Admin'
+    img { src: thumbnail, alt: 'profile picture' }
+    p null,
+      a { href: "mailto:#{email}" }, email
+```
+
+![Challenge Building the Member component](/images/07-01-challenge-building-the-member-component.gif)

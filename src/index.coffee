@@ -1,18 +1,15 @@
-import React, {createElement as ele} from 'react'
+import {createElement as ele} from 'react'
 import {render} from 'react-dom'
-import {HashRouter, Route, Switch} from 'react-router-dom'
-import {App} from './components/App.coffee'
-import {Whoops404} from './components/Whoops404.coffee'
-import './stylesheets/ui.scss'
-import './stylesheets/index.scss'
+import {Member} from './components/ui/Member.coffee'
+import './stylesheets/style.scss'
 
-routes =
-  ele HashRouter, null,
-    ele Switch, null,
-      ele Route, { path: '/', exact: true, component: App }
-      ele Route, { path: '/list-days', exact: true, component: App }
-      ele Route, { path: '/list-days/:filter(powder|backcountry)', component: App }
-      ele Route, { path: '/add-day', exact: true, component: App }
-      ele Route, { component: Whoops404 }
+member =
+  ele Member, {
+    admin: true,
+    name: 'Edna Welch',
+    email: 'edna.welch88@example.com',
+    thumbnail: 'https://randomuser.me/api/portraits/women/90.jpg',
+    makeAdmin: (email) -> console.log(email)
+  }
 
-render routes, document.getElementById('react-container')
+render member, document.getElementById('react-container')
