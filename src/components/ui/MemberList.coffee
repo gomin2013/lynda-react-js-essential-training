@@ -9,7 +9,11 @@ export class MemberList extends Component
     this.state = {
       members: []
       loading: false
+      administrators: []
     }
+
+    this.makeAdmin = this.makeAdmin.bind(this)
+    this.removeAdmin = this.removeAdmin.bind(this)
 
   componentDidMount: ->
     self = this
@@ -27,8 +31,21 @@ export class MemberList extends Component
           loading: false
         }
 
+  makeAdmin: (email) ->
+    unless this.state.administrators.includes(email)
+      this.setState {
+        administrators: [this.state.administrators..., email]
+      }
+
+  removeAdmin: (email) ->
+    this.setState {
+      administrators: this.state.administrators.filter((adminEmail) -> adminEmail != email)
+    }
+
   render: ->
-    {members, loading} = this.state
+    {makeAdmin, removeAdmin} = this
+    {administrators, members, loading} = this.state
+
     div { className: 'member-list' },
       h1 null,
         'Society Members'
@@ -42,10 +59,12 @@ export class MemberList extends Component
         members.map((member, i) ->
           ele Member, {
             key: i
+            admin: administrators.some((adminEmail) -> adminEmail == member.email)
             name: "#{member.name.first} #{member.name.last}"
             email: member.email
             thumbnail: member.picture.thumbnail
-            makeAdmin: (email) -> console.log(email)
+            makeAdmin: makeAdmin
+            removeAdmin: removeAdmin
           })
       else
         span null, 'Currently 0 Members'
